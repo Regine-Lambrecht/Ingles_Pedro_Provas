@@ -96,15 +96,22 @@
             border-right: 2px solid #e2e8f0;
             border-radius: 0 12px 12px 0;
         }
+        /* Key Term Highlight - Used only in Glossary */
+        .key-term {
+            color: #e53e3e !important; 
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
     <div id="app" class="flex-grow flex flex-col p-4 max-w-md mx-auto w-full">
+        <!-- Navigation Header -->
         <div id="header" class="flex items-center justify-between mb-6">
             <button id="back-btn" class="hidden text-blue-600 font-bold py-2 px-4 rounded-full border-2 border-blue-600 bg-white">← Voltar</button>
             <h1 id="screen-title" class="text-2xl font-bold text-center flex-grow">English Quest</h1>
         </div>
+
+        <!-- Main Content Area -->
         <div id="main-container" class="flex-grow flex flex-col justify-center gap-4"></div>
     </div>
 
@@ -121,33 +128,38 @@
             "P1": {
                 themes: {
                     "⭐ Family": [
-                        { en: "Grandparents", pt: "Avós" }, { en: "Uncle", pt: "Tio" },
-                        { en: "Parents", pt: "Pais" }, { en: "Aunt", pt: "Tia" },
-                        { en: "Sister", pt: "Irmã" }, { en: "Grandsister", pt: "Irmã-neta" },
-                        { en: "Brother", pt: "Irmão" }, { en: "Grandbrother", pt: "Irmão-neto" },
-                        { en: "Son", pt: "Filho" }, { en: "Grandson", pt: "Neto" },
-                        { en: "Daughter", pt: "Filha" }, { en: "Granddaughter", pt: "Neta" },
+                        { en: "*Grandparents", pt: "Avós" }, { en: "*Uncle", pt: "Tio" },
+                        { en: "*Parents", pt: "Pais" }, { en: "*Aunt", pt: "Tia" },
+                        { en: "Sister", pt: "Irmã" },
+                        { en: "Brother", pt: "Irmão" },
+                        { en: "*Son", pt: "Filho" }, { en: "*Grandson", pt: "Neto" },
+                        { en: "*Daughter", pt: "Filha" }, { en: "*Granddaughter", pt: "Neta" },
                         { en: "Grandma", pt: "Vovó" }, { en: "Grandpa", pt: "Vovô" },
                         { en: "Mother", pt: "Mãe" }, { en: "Father", pt: "Pai" }
                     ],
                     "⭐ Numbers": [
-                        { en: "One", pt: "1" }, { en: "Two", pt: "2" }, { en: "Three", pt: "3" },
-                        { en: "Four", pt: "4" }, { en: "Five", pt: "5" }, { en: "Six", pt: "6" },
-                        { en: "Seven", pt: "7" }, { en: "Eight", pt: "8" }, { en: "Nine", pt: "9" },
-                        { en: "Ten", pt: "10" }, { en: "Eleven", pt: "11" }, { en: "Twelve", pt: "12" },
-                        { en: "Thirteen", pt: "13" }, { en: "Fourteen", pt: "14" }, { en: "Fifteen", pt: "15" },
-                        { en: "Sixteen", pt: "16" }, { en: "Seventeen", pt: "17" }, { en: "Eighteen", pt: "18" },
-                        { en: "Nineteen", pt: "19" }, { en: "Twenty", pt: "20" }
+                        { en: "*One", pt: "1" }, { en: "*Two", pt: "2" }, { en: "*Three", pt: "3" },
+                        { en: "*Four", pt: "4" }, { en: "*Five", pt: "5" }, { en: "*Six", pt: "6" },
+                        { en: "*Seven", pt: "7" }, { en: "*Eight", pt: "8" }, { en: "*Nine", pt: "9" },
+                        { en: "*Ten", pt: "10" }, { en: "*Eleven", pt: "11" }, { en: "*Twelve", pt: "12" },
+                        { en: "*Thirteen", pt: "13" }, { en: "*Fourteen", pt: "14" }, { en: "*Fifteen", pt: "15" },
+                        { en: "*Sixteen", pt: "16" }, { en: "*Seventeen", pt: "17" }, { en: "*Eighteen", pt: "18" },
+                        { en: "*Nineteen", pt: "19" }, { en: "*Twenty", pt: "20" }
                     ],
                     "⭐ Adjectives": [
                         { en: "Favourite", pt: "Favorito" }, { en: "Big", pt: "Grande" },
                         { en: "Old", pt: "Velho" }, { en: "Small", pt: "Pequeno" },
                         { en: "Fat", pt: "Gordo" }, { en: "New", pt: "Novo" },
-                        { en: "Happy", pt: "Feliz" }, { en: "Quiet", pt: "Quieto" },
-                        { en: "Clever", pt: "Esperto" }, { en: "Beautiful", pt: "Bonito" },
-                        { en: "Straight", pt: "Liso" }, { en: "Funny", pt: "Engraçado" },
-                        { en: "Curly", pt: "Cacheado" }, { en: "Naughty", pt: "Malcriado" },
-                        { en: "Dirty", pt: "Sujo" }
+                        { en: "Happy", pt: "Feliz" }, { en: "*Quiet", pt: "Quieto" },
+                        { en: "*Clever", pt: "Esperto" }, { en: "Beautiful", pt: "Bonito" },
+                        { en: "*Straight", pt: "Liso" }, { en: "Funny", pt: "Engraçado" },
+                        { en: "*Curly", pt: "Cacheado" }, { en: "*Naughty", pt: "Malcriado" },
+                        { en: "Dirty", pt: "Sujo" }, { en: "*Fair", pt: "Loiro" },
+                        { en: "*Purple", pt: "Roxo" }, { en: "*Pink", pt: "Rosa" },
+                        { en: "*Green", pt: "Verde" }, { en: "*Black", pt: "Preto" },
+                        { en: "*White", pt: "Branco" }, { en: "*Blue", pt: "Azul" },
+                        { en: "*Grey", pt: "Cinza" }, { en: "*Orange", pt: "Laranja" },
+                        { en: "*Red", pt: "Vermelho" }, { en: "*Yellow", pt: "Amarelo" }
                     ],
                     "⭐ Present Continuous": [
                         { en: "My mother is reading", pt: "Minha mãe está lendo" },
@@ -166,15 +178,43 @@
                         { en: "My grandpa is holding a book", pt: "Meu vovô está segurando um livro" },
                         { en: "She is drawing a flower", pt: "Ela está desenhando uma flor" }
                     ],
-                    "Body": [
-                        { en: "Eye", pt: "Olho" }, { en: "Hair", pt: "Cabelo" },
-                        { en: "Beard", pt: "Barba" }, { en: "Moustache", pt: "Bigode" }
+                    "⭐ Sentences": [
+                        { en: "I've got a sister", pt: "Eu tenho uma irmã" },
+                        { en: "I've got a dog", pt: "Eu tenho um cachorro" },
+                        { en: "My sister is called Luna", pt: "Minha irmã se chama Luna" },
+                        { en: "*What's your name?", pt: "Qual é o seu nome?" },
+                        { en: "*How old are you?", pt: "Quantos anos você tem?" },
+                        { en: "*I'm nine", pt: "Eu tenho 9 anos" },
+                        { en: "*I'm eleven", pt: "Eu tenho 11 anos" },
+                        { en: "This is my favourite toy", pt: "Este é meu brinquedo favorito" },
+                        { en: "*It's on the table", pt: "Está na mesa" },
+                        { en: "*It's in the box", pt: "Está dentro da caixa" },
+                        { en: "*It's on the floor", pt: "Está no chão" },
+                        { en: "*It's under the table", pt: "Está debaixo da mesa" },
+                        { en: "*It's behind the bike", pt: "Está atrás da bicicleta" },
+                        { en: "*It's between the book and the cake", pt: "Está entre o livro e o bolo" },
+                        { en: "What are you doing?", pt: "O que você está fazendo?" },
+                        { en: "What's Luna eating?", pt: "O que a Luna está comendo?" },
+                        { en: "I'm riding a bike", pt: "Eu estou andando de bicicleta" },
+                        { en: "I've got a fat doll", pt: "Eu tenho uma boneca gorda" },
+                        { en: "We've got toys", pt: "Nós temos brinquedos" },
+                        { en: "*It's in front of the ball", pt: "Está na frente da bola" },
+                        { en: "*It's next to the phone", pt: "Está ao lado do telefone" },
+                        { en: "I'm happy", pt: "Eu estou feliz" },
+                        { en: "Please help me!", pt: "Por favor me ajude!" },
+                        { en: "*Who's Stella's uncle?", pt: "Quem é o tio da Stella?" },
+                        { en: "*Who are Susy's parents?", pt: "Quem são os pais da Susy?" },
+                        { en: "How many toys have you got?", pt: "Quantos brinquedos você tem?" },
+                        { en: "*I love flying my kite", pt: "Eu amo soltar minha pipa" },
+                        { en: "*I like playing football", pt: "Eu gosto de jogar futebol" },
+                        { en: "I need a towel", pt: "Eu preciso de uma toalha" },
+                        { en: "*Suzy wants to wash her dog", pt: "Suzy quer lavar o cachorro dela" },
+                        { en: "*I enjoy eating a burger", pt: "Eu gosto de comer um hambúrguer" },
+                        { en: "She is with her mother", pt: "Ela está com a mãe dela" }
                     ],
-                    "Colours": [
-                        { en: "Purple", pt: "Roxo" }, { en: "Pink", pt: "Rosa" },
-                        { en: "Green", pt: "Verde" }, { en: "Black", pt: "Preto" },
-                        { en: "White", pt: "Branco" }, { en: "Blue", pt: "Azul" },
-                        { en: "Grey", pt: "Cinza" }
+                    "Body": [
+                        { en: "Eye", pt: "Olho" }, { en: "*Hair", pt: "Cabelo" },
+                        { en: "*Beard", pt: "Barba" }, { en: "*Moustache", pt: "Bigode" }
                     ],
                     "Animals": [
                         { en: "Dog", pt: "Cachorro" }, { en: "Spider", pt: "Aranha" },
@@ -205,55 +245,23 @@
                     "Job": [
                         { en: "Doctor", pt: "Médico" }, { en: "Farmer", pt: "Fazendeiro" }
                     ],
-                    "Sentences": [
-                        { en: "I'm nine", pt: "Eu tenho 9 anos" },
-                        { en: "I'm eleven", pt: "Eu tenho 11 anos" },
-                        { en: "I've got a sister", pt: "Eu tenho uma irmã" },
-                        { en: "I've got a dog", pt: "Eu tenho um cachorro" },
-                        { en: "My sister is called Luna", pt: "Minha irmã se chama Luna" },
-                        { en: "What's your name?", pt: "Qual é o seu nome?" },
-                        { en: "How old are you?", pt: "Quantos anos você tem?" },
-                        { en: "This is my favourite toy", pt: "Este é meu brinquedo favorito" },
-                        { en: "It's on the table", pt: "Está na mesa" },
-                        { en: "It's in the box", pt: "Está dentro da caixa" },
-                        { en: "It's on the floor", pt: "Está no chão" },
-                        { en: "It's under the table", pt: "Está debaixo da mesa" },
-                        { en: "It's behind the bike", pt: "Está atrás da bicicleta" },
-                        { en: "It's between the book and the cake", pt: "Está entre o livro e o bolo" },
-                        { en: "What are you doing?", pt: "O que você está fazendo?" },
-                        { en: "What's Luna eating?", pt: "O que a Luna está comendo?" },
-                        { en: "I'm riding a bike", pt: "Eu estou andando de bicicleta" },
-                        { en: "I've got a fat doll", pt: "Eu tenho uma boneca gorda" },
-                        { en: "We've got toys", pt: "Nós temos brinquedos" },
-                        { en: "It's in front of the ball", pt: "Está na frente da bola" },
-                        { en: "It's next to the phone", pt: "Está ao lado do telefone" },
-                        { en: "I'm happy", pt: "Eu estou feliz" },
-                        { en: "Please help me!", pt: "Por favor me ajude!" },
-                        { en: "Who's Stella's uncle?", pt: "Quem é o tio da Stella?" },
-                        { en: "Who are Susy's parents?", pt: "Quem são os pais da Susy?" },
-                        { en: "How many toys have you got?", pt: "Quantos brinquedos você tem?" },
-                        { en: "She is with her mother", pt: "Ela está com a mãe dela" },
-                        { en: "I love flying my kite", pt: "Eu amo soltar minha pipa" },
-                        { en: "I like playing football", pt: "Eu gosto de jogar futebol" },
-                        { en: "I need a towel", pt: "Eu preciso de uma toalha" },
-                        { en: "Suzy wants to wash her dog", pt: "Suzy quer lavar o cachorro dela" },
-                        { en: "I enjoy eating a burger", pt: "Eu gosto de comer um hambúrguer" }
-                    ],
                     "Other": [
                         { en: "Table", pt: "Mesa" }, { en: "Book", pt: "Livro" },
                         { en: "Box", pt: "Caixa" }, { en: "Ball", pt: "Bola" },
-                        { en: "Floor", pt: "Chão" }, { en: "Train", pt: "Trem" },
-                        { en: "Bike", pt: "Bicicleta" }, { en: "Game", pt: "Jogo" },
-                        { en: "Computer", pt: "Computador" }, { en: "Toy", pt: "Brinquedo" },
-                        { en: "Hello", pt: "Olá" }, { en: "Hi", pt: "Oi" },
-                        { en: "Cake", pt: "Bolo" }, { en: "Kite", pt: "Pipa" },
+                        { en: "Floor", pt: "Chão" }, { en: "*Train", pt: "Trem" },
+                        { en: "*Bike", pt: "Bicicleta" }, { en: "*Game", pt: "Jogo" },
+                        { en: "*Computer", pt: "Computador" }, { en: "*Toy", pt: "Brinquedo" },
+                        { en: "*Hello", pt: "Olá" }, { en: "Hi", pt: "Oi" },
+                        { en: "Cake", pt: "Bolo" }, { en: "*Kite", pt: "Pipa" },
                         { en: "Sorry", pt: "Desculpe" }, { en: "Phone", pt: "Telefone" },
                         { en: "Please", pt: "Por favor" }, { en: "House", pt: "Casa" },
                         { en: "Tail", pt: "Cauda" }, { en: "Towel", pt: "Toalha" },
-                        { en: "Picture", pt: "Quadro" }, { en: "Doll", pt: "Boneca" },
-                        { en: "Helmet", pt: "Capacete" }, { en: "Burger", pt: "Hambúrguer" },
-                        { en: "Flower", pt: "Flor" }, { en: "Robot", pt: "Robô" },
-                        { en: "School", pt: "Escola" }
+                        { en: "Picture", pt: "Quadro" }, { en: "*Doll", pt: "Boneca" },
+                        { en: "*Helmet", pt: "Capacete" }, { en: "Burger", pt: "Hambúrguer" },
+                        { en: "Flower", pt: "Flor" }, { en: "*Robot", pt: "Robô" },
+                        { en: "School", pt: "Escola" }, { en: "*Camera", pt: "Câmera" },
+                        { en: "*Helicopter", pt: "Helicóptero" }, { en: "*Monster", pt: "Monstro" },
+                        { en: "*Lorry", pt: "Carrinho" }
                     ],
                 }
             },
@@ -274,6 +282,7 @@
         let attemptCount = 0;
         let selectedWrongIndices = []; 
         let finishedCurrentQuestion = false;
+        let vocabOnlyStars = false; 
 
         let userProgress = JSON.parse(localStorage.getItem('english_quest_progress')) || {};
         let isAllCaps = localStorage.getItem('english_quest_caps') === 'true';
@@ -298,7 +307,8 @@
         }
 
         function speak(text, lang = 'en-US', onComplete = null) {
-            const utterance = new SpeechSynthesisUtterance(text);
+            const speechText = String(text).replace(/^\*/, '');
+            const utterance = new SpeechSynthesisUtterance(speechText);
             utterance.lang = lang; 
             utterance.rate = 0.8; 
             if (onComplete) {
@@ -309,6 +319,7 @@
 
         function setScreen(screen) {
             currentScreen = screen;
+            if (screen !== 'vocabulary') vocabOnlyStars = false;
             render();
         }
 
@@ -449,6 +460,7 @@
         }
 
         function renderHome() {
+            container.innerHTML = '';
             screenTitle.innerText = "Meus Estudos";
             const toggleContainer = document.createElement('div');
             toggleContainer.className = "flex justify-center mb-6";
@@ -473,6 +485,7 @@
         }
 
         function renderThemes() {
+            container.innerHTML = '';
             screenTitle.innerText = `Temas de ${currentProva}`;
             Object.keys(PROVAS[currentProva].themes).forEach(theme => {
                 const themeData = PROVAS[currentProva].themes[theme];
@@ -514,33 +527,58 @@
         }
 
         function renderVocabulary() {
+            container.innerHTML = ''; 
             screenTitle.innerText = formatText(`Lista: ${currentTheme}`);
-            const words = [...PROVAS[currentProva].themes[currentTheme]];
-            words.sort((a, b) => a.en.localeCompare(b.en));
+            let words = [...PROVAS[currentProva].themes[currentTheme]];
+            
+            words.sort((a, b) => a.en.replace(/^\*/, '').localeCompare(b.en.replace(/^\*/, '')));
+
+            if (vocabOnlyStars) {
+                words = words.filter(w => w.en.startsWith('*'));
+            }
+
+            const filterBtn = document.createElement('button');
+            filterBtn.className = `w-full p-4 mb-4 rounded-2xl font-bold border-2 transition-all btn-bounce ${vocabOnlyStars ? 'bg-yellow-400 border-yellow-500 text-yellow-900' : 'bg-white border-blue-600 text-blue-600'}`;
+            filterBtn.innerText = vocabOnlyStars ? formatText("* Mostrando Principais") : formatText("Mostrar apenas Principais (*)");
+            filterBtn.onclick = () => {
+                vocabOnlyStars = !vocabOnlyStars;
+                renderVocabulary();
+            };
+            container.appendChild(filterBtn);
 
             const tableWrap = document.createElement('div');
             tableWrap.className = "overflow-y-auto max-h-[70vh] px-1";
             
-            const table = document.createElement('table');
-            table.className = "vocab-table";
-            table.innerHTML = `
-                <thead>
-                    <tr class="bg-transparent">
-                        <th class="text-left p-3 opacity-50 text-sm">English</th>
-                        <th class="text-left p-3 opacity-50 text-sm">Brasil</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${words.map(w => `
-                        <tr>
-                            <td>${formatText(w.en)}</td>
-                            <td>${formatText(w.pt)}</td>
+            if (words.length === 0) {
+                const empty = document.createElement('div');
+                empty.className = "p-8 text-center opacity-50 font-bold";
+                empty.innerText = formatText("Nenhum termo principal encontrado.");
+                tableWrap.appendChild(empty);
+            } else {
+                const table = document.createElement('table');
+                table.className = "vocab-table";
+                table.innerHTML = `
+                    <thead>
+                        <tr class="bg-transparent">
+                            <th class="text-left p-3 opacity-50 text-sm">English</th>
+                            <th class="text-left p-3 opacity-50 text-sm">Brasil</th>
                         </tr>
-                    `).join('')}
-                </tbody>
-            `;
+                    </thead>
+                    <tbody>
+                        ${words.map(w => {
+                            const isStar = w.en.startsWith('*');
+                            return `
+                                <tr class="${isStar ? 'key-term' : ''}">
+                                    <td>${formatText(w.en)}</td>
+                                    <td>${formatText(w.pt)}</td>
+                                </tr>
+                            `;
+                        }).join('')}
+                    </tbody>
+                `;
+                tableWrap.appendChild(table);
+            }
             
-            tableWrap.appendChild(table);
             container.appendChild(tableWrap);
 
             const bottomBtn = document.createElement('button');
@@ -551,20 +589,35 @@
         }
 
         function renderLevels() {
+            container.innerHTML = '';
             screenTitle.innerText = currentTheme;
             const levels = [{ id: 1, title: "Nível 1", sub: "Inglês → Português" }, { id: 2, title: "Nível 2", sub: "Português → Inglês" }, { id: 3, title: "Nível 3", sub: "🎧 Só Áudio" }];
             const completedForTheme = userProgress[currentTheme] || [];
-            levels.forEach(l => {
+            levels.forEach((l, index) => {
                 const isCompleted = completedForTheme.includes(l.id);
+                const isLocked = index > 0 && !completedForTheme.includes(levels[index - 1].id);
+
                 const btn = document.createElement('button');
-                btn.className = `card p-6 flex flex-col items-center btn-bounce border-b-4 ${isCompleted ? 'border-green-400' : 'border-green-200'}`;
-                btn.innerHTML = `<div class="flex items-center gap-2"><span class="text-2xl font-bold">${l.title}</span>${isCompleted ? '<span class="text-green-600">✓</span>' : ''}</div><span class="text-sm opacity-60">${l.sub}</span>`;
-                btn.onclick = () => startTheme(currentProva, currentTheme, l.id);
+                btn.className = `card p-6 flex flex-col items-center btn-bounce border-b-4 ${isCompleted ? 'border-green-400' : 'border-green-200'} ${isLocked ? 'locked' : ''}`;
+                
+                btn.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <span class="text-2xl font-bold">${l.title}</span>
+                        ${isCompleted ? '<span class="text-green-600">✓</span>' : ''}
+                        ${isLocked ? '<span>🔒</span>' : ''}
+                    </div>
+                    <span class="text-sm opacity-60">${l.sub}</span>
+                `;
+                
+                if (!isLocked) {
+                    btn.onclick = () => startTheme(currentProva, currentTheme, l.id);
+                }
                 container.appendChild(btn);
             });
         }
 
         function renderGame() {
+            container.innerHTML = '';
             const current = questionList[currentIndex];
             const allItems = PROVAS[currentProva].themes[currentTheme];
             let options = getOptions(current, allItems);
@@ -590,7 +643,7 @@
             }
             container.appendChild(promptCard);
 
-            const isHiddenTheme = currentTheme === "⭐ Present Continuous" || currentTheme === "Sentences";
+            const isHiddenTheme = currentTheme === "⭐ Present Continuous" || currentTheme === "⭐ Sentences";
             const hideOptions = isHiddenTheme && !window._suggestionsRevealed && !finishedCurrentQuestion;
 
             if (hideOptions) {
@@ -635,6 +688,7 @@
         }
 
         function renderFinish() {
+            container.innerHTML = '';
             screenTitle.innerText = formatText("Parabéns!");
             container.innerHTML = `<div class="card p-10 text-center flex flex-col gap-6"><div class="text-6xl">🏆</div><h2 class="text-3xl font-bold">${formatText("Incrível!")}</h2><p class="text-xl">${formatText("Você terminou o")} <b>${formatText("Nível " + currentLevel)}</b>!</p><button id="finish-btn" class="bg-blue-600 text-white p-6 rounded-2xl text-2xl font-bold btn-bounce mt-4 shadow-lg">${formatText("Continuar")}</button></div>`;
             document.getElementById('finish-btn').onclick = () => setScreen('levels');
