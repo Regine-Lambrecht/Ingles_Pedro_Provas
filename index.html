@@ -29,18 +29,18 @@
             border-color: #c53030 !important;
         }
         .highlight {
-            border: 5px solid #48bb78 !important;
+            border: 4px solid #48bb78 !important;
             animation: pulse 1.5s infinite;
         }
         @keyframes pulse {
             0% { transform: scale(1); }
-            50% { transform: scale(1.03); }
+            50% { transform: scale(1.02); }
             100% { transform: scale(1); }
         }
         .card {
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-radius: 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .locked {
             opacity: 0.5;
@@ -50,12 +50,12 @@
         }
         .option-text-main {
             display: block;
-            font-size: 1.35rem;
+            font-size: 1.15rem;
             font-weight: 700;
         }
         .option-text-sub {
             display: block;
-            font-size: 0.95rem;
+            font-size: 0.85rem;
             font-weight: 400;
             opacity: 0; 
             transition: opacity 0.3s ease;
@@ -76,25 +76,26 @@
         .vocab-table {
             width: 100%;
             border-collapse: separate;
-            border-spacing: 0 8px;
+            border-spacing: 0 4px;
         }
         .vocab-table tr {
             background: white;
-            border-radius: 12px;
+            border-radius: 10px;
         }
         .vocab-table td {
-            padding: 12px;
-            border-top: 2px solid #e2e8f0;
-            border-bottom: 2px solid #e2e8f0;
+            padding: 8px 12px;
+            border-top: 1px solid #e2e8f0;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.9rem;
         }
         .vocab-table td:first-child {
-            border-left: 2px solid #e2e8f0;
-            border-radius: 12px 0 0 12px;
+            border-left: 1px solid #e2e8f0;
+            border-radius: 10px 0 0 10px;
             font-weight: 700;
         }
         .vocab-table td:last-child {
-            border-right: 2px solid #e2e8f0;
-            border-radius: 0 12px 12px 0;
+            border-right: 1px solid #e2e8f0;
+            border-radius: 0 10px 10px 0;
         }
         /* Key Term Highlight - Used only in Glossary */
         .key-term {
@@ -104,21 +105,21 @@
 </head>
 <body class="min-h-screen flex flex-col">
 
-    <div id="app" class="flex-grow flex flex-col p-4 max-w-md mx-auto w-full">
+    <div id="app" class="flex-grow flex flex-col p-3 max-w-md mx-auto w-full">
         <!-- Navigation Header -->
-        <div id="header" class="flex items-center justify-between mb-6">
-            <button id="back-btn" class="hidden text-blue-600 font-bold py-2 px-4 rounded-full border-2 border-blue-600 bg-white">← Voltar</button>
-            <h1 id="screen-title" class="text-2xl font-bold text-center flex-grow">English Quest</h1>
+        <div id="header" class="flex items-center justify-between mb-4">
+            <button id="back-btn" class="hidden text-blue-600 font-bold py-1.5 px-3 rounded-full border-2 border-blue-600 bg-white text-sm">← Voltar</button>
+            <h1 id="screen-title" class="text-xl font-bold text-center flex-grow">English Quest</h1>
         </div>
 
         <!-- Main Content Area -->
-        <div id="main-container" class="flex-grow flex flex-col justify-center gap-4"></div>
+        <div id="main-container" class="flex-grow flex flex-col justify-start gap-3"></div>
     </div>
 
     <!-- Feedback Overlay -->
     <div id="feedback" class="fixed inset-0 flex items-center justify-center pointer-events-none opacity-0 transition-opacity duration-300 z-50">
-        <div class="bg-white p-8 rounded-3xl shadow-2xl border-4 transform scale-125">
-            <span id="feedback-text" class="text-3xl font-bold text-center block text-center px-4"></span>
+        <div class="bg-white p-6 rounded-3xl shadow-2xl border-4 transform scale-110">
+            <span id="feedback-text" class="text-2xl font-bold text-center block px-4"></span>
         </div>
     </div>
 
@@ -400,15 +401,15 @@
                 speak(first.text, first.lang, () => {
                     setTimeout(() => {
                         speak(second.text, second.lang, () => {
-                            const delay = wasCorrect ? 2000 : 5000;
+                            const delay = wasCorrect ? 1000 : 3000;
                             setTimeout(() => {
                                 showNextButton = true;
                                 render(); 
                             }, delay);
                         });
-                    }, 500);
+                    }, 400);
                 });
-            }, 500);
+            }, 400);
         }
 
         function nextQuestion() {
@@ -456,16 +457,16 @@
             feedback.classList.remove('opacity-0');
             setTimeout(() => {
                 feedback.classList.add('opacity-0');
-            }, 1500);
+            }, 1200);
         }
 
         function renderHome() {
             container.innerHTML = '';
             screenTitle.innerText = "Meus Estudos";
             const toggleContainer = document.createElement('div');
-            toggleContainer.className = "flex justify-center mb-6";
+            toggleContainer.className = "flex justify-center mb-4";
             const capsBtn = document.createElement('button');
-            capsBtn.className = `p-4 rounded-2xl font-bold border-2 border-blue-600 transition-all btn-bounce ${isAllCaps ? 'toggle-active' : 'bg-white text-blue-600'}`;
+            capsBtn.className = `p-3 rounded-xl font-bold border-2 border-blue-600 transition-all btn-bounce text-sm ${isAllCaps ? 'toggle-active' : 'bg-white text-blue-600'}`;
             capsBtn.innerText = isAllCaps ? "MAIÚSCULAS: ATIVADO" : "Maiúsculas: Desativado";
             capsBtn.onclick = () => {
                 isAllCaps = !isAllCaps;
@@ -477,7 +478,7 @@
 
             Object.keys(PROVAS).forEach(prova => {
                 const btn = document.createElement('button');
-                btn.className = "card p-8 text-3xl font-bold btn-bounce bg-white border-b-8 border-blue-200 active:border-b-0";
+                btn.className = "card p-6 text-2xl font-bold btn-bounce bg-white border-b-4 border-blue-200 active:border-b-0 mb-3";
                 btn.innerText = prova;
                 btn.onclick = () => { currentProva = prova; setScreen('themes'); };
                 container.appendChild(btn);
@@ -492,25 +493,25 @@
                 const completedCount = (userProgress[theme] || []).length;
                 
                 const themeCard = document.createElement('div');
-                themeCard.className = "card p-5 flex justify-between items-center border-b-4 border-yellow-200 cursor-pointer transition-all hover:bg-gray-50 active:scale-95";
+                themeCard.className = "card p-3.5 flex justify-between items-center border-b-4 border-yellow-200 cursor-pointer transition-all hover:bg-gray-50 active:scale-95 mb-2.5";
                 themeCard.onclick = () => { currentTheme = theme; setScreen('levels'); };
                 
                 const leftArea = document.createElement('div');
                 leftArea.className = "flex flex-col items-start text-left";
                 leftArea.innerHTML = `
-                    <span class="text-2xl font-bold">${theme}</span>
-                    <span class="text-sm opacity-60">${completedCount}/3 níveis feitos</span>
+                    <span class="text-lg font-bold">${theme}</span>
+                    <span class="text-xs opacity-60">${completedCount}/3 níveis feitos</span>
                 `;
                 
                 const rightArea = document.createElement('div');
-                rightArea.className = "flex flex-col items-end gap-2";
+                rightArea.className = "flex flex-col items-end gap-1";
                 
                 const topIcons = document.createElement('div');
-                topIcons.className = "flex items-center gap-2";
-                if (completedCount === 3) topIcons.innerHTML += '<span>✅</span>';
+                topIcons.className = "flex items-center gap-1.5";
+                if (completedCount === 3) topIcons.innerHTML += '<span class="text-sm">✅</span>';
 
                 const vocabBtn = document.createElement('button');
-                vocabBtn.className = "text-xs font-bold text-blue-600 bg-blue-50 py-2 px-3 rounded-xl border border-blue-100 hover:bg-blue-100 transition-colors";
+                vocabBtn.className = "text-[10px] font-bold text-blue-600 bg-blue-50 py-1 px-2 rounded-lg border border-blue-100 hover:bg-blue-100 transition-colors";
                 vocabBtn.innerText = formatText(`📖 ${themeData.length} termos`);
                 vocabBtn.onclick = (e) => {
                     e.stopPropagation();
@@ -538,7 +539,7 @@
             }
 
             const filterBtn = document.createElement('button');
-            filterBtn.className = `w-full p-4 mb-4 rounded-2xl font-bold border-2 transition-all btn-bounce ${vocabOnlyStars ? 'bg-yellow-400 border-yellow-500 text-yellow-900' : 'bg-white border-blue-600 text-blue-600'}`;
+            filterBtn.className = `w-full p-3 mb-3 rounded-xl font-bold border-2 transition-all btn-bounce text-sm ${vocabOnlyStars ? 'bg-yellow-400 border-yellow-500 text-yellow-900' : 'bg-white border-blue-600 text-blue-600'}`;
             filterBtn.innerText = vocabOnlyStars ? formatText("* Mostrando Principais") : formatText("Mostrar apenas Principais (*)");
             filterBtn.onclick = () => {
                 vocabOnlyStars = !vocabOnlyStars;
@@ -547,11 +548,11 @@
             container.appendChild(filterBtn);
 
             const tableWrap = document.createElement('div');
-            tableWrap.className = "overflow-y-auto max-h-[70vh] px-1";
+            tableWrap.className = "overflow-y-auto max-h-[60vh] px-1";
             
             if (words.length === 0) {
                 const empty = document.createElement('div');
-                empty.className = "p-8 text-center opacity-50 font-bold";
+                empty.className = "p-6 text-center opacity-50 font-bold text-sm";
                 empty.innerText = formatText("Nenhum termo principal encontrado.");
                 tableWrap.appendChild(empty);
             } else {
@@ -559,9 +560,9 @@
                 table.className = "vocab-table";
                 table.innerHTML = `
                     <thead>
-                        <tr class="bg-transparent">
-                            <th class="text-left p-3 opacity-50 text-sm">English</th>
-                            <th class="text-left p-3 opacity-50 text-sm">Brasil</th>
+                        <tr class="bg-transparent text-xs opacity-50">
+                            <th class="text-left p-2">English</th>
+                            <th class="text-left p-2">Brasil</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -582,7 +583,7 @@
             container.appendChild(tableWrap);
 
             const bottomBtn = document.createElement('button');
-            bottomBtn.className = "w-full bg-blue-600 text-white p-5 rounded-2xl text-xl font-bold btn-bounce mt-4 shadow-lg";
+            bottomBtn.className = "w-full bg-blue-600 text-white p-4 rounded-xl text-lg font-bold btn-bounce mt-3 shadow-lg";
             bottomBtn.innerText = formatText("Voltar");
             bottomBtn.onclick = () => setScreen('themes');
             container.appendChild(bottomBtn);
@@ -598,15 +599,15 @@
                 const isLocked = index > 0 && !completedForTheme.includes(levels[index - 1].id);
 
                 const btn = document.createElement('button');
-                btn.className = `card p-6 flex flex-col items-center btn-bounce border-b-4 ${isCompleted ? 'border-green-400' : 'border-green-200'} ${isLocked ? 'locked' : ''}`;
+                btn.className = `card p-5 flex flex-col items-center btn-bounce border-b-4 ${isCompleted ? 'border-green-400' : 'border-green-200'} ${isLocked ? 'locked' : ''} mb-3`;
                 
                 btn.innerHTML = `
                     <div class="flex items-center gap-2">
-                        <span class="text-2xl font-bold">${l.title}</span>
+                        <span class="text-xl font-bold">${l.title}</span>
                         ${isCompleted ? '<span class="text-green-600">✓</span>' : ''}
-                        ${isLocked ? '<span>🔒</span>' : ''}
+                        ${isLocked ? '<span class="text-sm">🔒</span>' : ''}
                     </div>
-                    <span class="text-sm opacity-60">${l.sub}</span>
+                    <span class="text-xs opacity-60">${l.sub}</span>
                 `;
                 
                 if (!isLocked) {
@@ -625,21 +626,21 @@
             screenTitle.innerText = isReviewing ? formatText("Revisão") : `${formatText("Questão")} ${currentIndex + 1}/${questionList.length}`;
             
             const promptCard = document.createElement('div');
-            promptCard.className = "card p-8 flex flex-col items-center justify-center mb-4";
+            promptCard.className = "card p-6 flex flex-col items-center justify-center mb-3 min-h-[100px]";
             
             if (currentLevel === 3) {
                 const playBtn = document.createElement('button');
-                playBtn.className = "text-6xl p-6 bg-blue-100 rounded-full btn-bounce shadow-inner";
+                playBtn.className = "text-4xl p-4 bg-blue-100 rounded-full btn-bounce shadow-inner";
                 playBtn.innerHTML = "🔊";
                 playBtn.onclick = () => speak(current.en);
                 promptCard.appendChild(playBtn);
                 const repeatTxt = document.createElement('p');
-                repeatTxt.className = "mt-4 text-blue-600 font-bold";
+                repeatTxt.className = "mt-2 text-blue-600 font-bold text-sm";
                 repeatTxt.innerText = formatText("Toque para ouvir");
                 promptCard.appendChild(repeatTxt);
             } else {
                 let questionPrompt = currentLevel === 1 ? current.en : current.pt;
-                promptCard.innerHTML = `<h2 class="text-4xl font-bold text-center">${formatText(questionPrompt)}</h2>`;
+                promptCard.innerHTML = `<h2 class="text-2xl font-bold text-center leading-tight">${formatText(questionPrompt)}</h2>`;
             }
             container.appendChild(promptCard);
 
@@ -648,7 +649,7 @@
 
             if (hideOptions) {
                 const sugBtn = document.createElement('button');
-                sugBtn.className = "w-full bg-yellow-400 text-yellow-900 p-6 rounded-2xl text-2xl font-bold btn-bounce shadow-lg flex items-center justify-center gap-3 mt-4 border-b-8 border-yellow-500 active:border-b-0";
+                sugBtn.className = "w-full bg-yellow-400 text-yellow-900 p-4 rounded-xl text-xl font-bold btn-bounce shadow-lg flex items-center justify-center gap-3 mt-2 border-b-4 border-yellow-500 active:border-b-0";
                 sugBtn.innerHTML = `💡 ${formatText("Sugestões")}`;
                 sugBtn.onclick = () => {
                     window._suggestionsRevealed = true;
@@ -658,11 +659,11 @@
             } else {
                 const grid = document.createElement('div');
                 grid.id = 'options-grid';
-                grid.className = `grid gap-4 mb-4 ${finishedCurrentQuestion ? 'reveal-all' : ''}`;
+                grid.className = `grid gap-2.5 mb-2 ${finishedCurrentQuestion ? 'reveal-all' : ''}`;
                 
                 options.forEach((opt, index) => {
                     const btn = document.createElement('button');
-                    btn.className = `option-btn card p-4 border-4 border-transparent btn-bounce transition-all`;
+                    btn.className = `option-btn card p-3 border-2 border-transparent btn-bounce transition-all min-h-[60px] flex flex-col justify-center items-center`;
                     if (selectedWrongIndices.includes(index)) btn.classList.add('wrong', 'revealed-single');
                     if (finishedCurrentQuestion && opt.en === current.en) btn.classList.add('correct', 'highlight');
                     
@@ -680,8 +681,8 @@
 
             if (showNextButton) {
                 const nextBtn = document.createElement('button');
-                nextBtn.className = "w-full bg-blue-600 text-white p-6 rounded-2xl text-2xl font-bold btn-bounce shadow-xl flex items-center justify-center gap-3 animate-pulse";
-                nextBtn.innerHTML = `${formatText("Próximo")} <span class="text-3xl">→</span>`;
+                nextBtn.className = "w-full bg-blue-600 text-white p-4 rounded-xl text-xl font-bold btn-bounce shadow-xl flex items-center justify-center gap-2 animate-pulse mt-1 border-b-4 border-blue-800 active:border-b-0";
+                nextBtn.innerHTML = `${formatText("Próximo")} <span class="text-xl">→</span>`;
                 nextBtn.onclick = nextQuestion;
                 container.appendChild(nextBtn);
             }
@@ -690,7 +691,7 @@
         function renderFinish() {
             container.innerHTML = '';
             screenTitle.innerText = formatText("Parabéns!");
-            container.innerHTML = `<div class="card p-10 text-center flex flex-col gap-6"><div class="text-6xl">🏆</div><h2 class="text-3xl font-bold">${formatText("Incrível!")}</h2><p class="text-xl">${formatText("Você terminou o")} <b>${formatText("Nível " + currentLevel)}</b>!</p><button id="finish-btn" class="bg-blue-600 text-white p-6 rounded-2xl text-2xl font-bold btn-bounce mt-4 shadow-lg">${formatText("Continuar")}</button></div>`;
+            container.innerHTML = `<div class="card p-8 text-center flex flex-col gap-4"><div class="text-5xl">🏆</div><h2 class="text-2xl font-bold">${formatText("Incrível!")}</h2><p class="text-lg">${formatText("Você terminou o")} <b>${formatText("Nível " + currentLevel)}</b>!</p><button id="finish-btn" class="bg-blue-600 text-white p-4 rounded-xl text-xl font-bold btn-bounce mt-2 shadow-lg">${formatText("Continuar")}</button></div>`;
             document.getElementById('finish-btn').onclick = () => setScreen('levels');
             speak("Incrível! Excelente trabalho!", "pt-BR");
         }
