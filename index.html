@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Quest - Cambridge Starters</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Lexend', sans-serif;
+            background-color: #fdf6e3; 
+            color: #2c3e50;
+            margin: 0;
+            overflow-x: hidden;
+            touch-action: manipulation;
+        }
+        .btn-bounce:active {
+            transform: scale(0.95);
+        }
+        .correct {
+            background-color: #48bb78 !important;
+            color: white !important;
+            border-color: #2f855a !important;
+        }
+        .wrong {
+            background-color: #f56565 !important;
+            color: white !important;
+            border-color: #c53030 !important;
+        }
+        .highlight {
+            border: 5px solid #48bb78 !important;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .locked {
+            opacity: 0.5;
+            filter: grayscale(1);
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        .option-text-main {
+            display: block;
+            font-size: 1.35rem;
+            font-weight: 700;
+        }
+        .option-text-sub {
+            display: block;
+            font-size: 0.95rem;
+            font-weight: 400;
+            opacity: 0; 
+            transition: opacity 0.3s ease;
+        }
+        /* Reveal for a specific button */
+        .revealed-single .option-text-sub {
+            opacity: 0.85;
+        }
+        /* Reveal for all buttons when parent container has this class */
+        .reveal-all .option-text-sub {
+            opacity: 0.85;
+        }
+        .toggle-active {
+            background-color: #3182ce !important;
+            color: white !important;
+        }
+        /* Table Styles */
+        .vocab-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 8px;
+        }
+        .vocab-table tr {
+            background: white;
+            border-radius: 12px;
+        }
+        .vocab-table td {
+            padding: 12px;
+            border-top: 2px solid #e2e8f0;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .vocab-table td:first-child {
+            border-left: 2px solid #e2e8f0;
+            border-radius: 12px 0 0 12px;
+            font-weight: 700;
+        }
+        .vocab-table td:last-child {
+            border-right: 2px solid #e2e8f0;
+            border-radius: 0 12px 12px 0;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <div id="app" class="flex-grow flex flex-col p-4 max-w-md mx-auto w-full">
+        <div id="header" class="flex items-center justify-between mb-6">
+            <button id="back-btn" class="hidden text-blue-600 font-bold py-2 px-4 rounded-full border-2 border-blue-600 bg-white">← Voltar</button>
+            <h1 id="screen-title" class="text-2xl font-bold text-center flex-grow">English Quest</h1>
+        </div>
+        <div id="main-container" class="flex-grow flex flex-col justify-center gap-4"></div>
+    </div>
+
+    <!-- Feedback Overlay -->
+    <div id="feedback" class="fixed inset-0 flex items-center justify-center pointer-events-none opacity-0 transition-opacity duration-300 z-50">
+        <div class="bg-white p-8 rounded-3xl shadow-2xl border-4 transform scale-125">
+            <span id="feedback-text" class="text-3xl font-bold text-center block text-center px-4"></span>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA ---
+        const PROVAS = {
+            "P1": {
+                themes: {
+                    "⭐ Family": [
+                        { en: "Grandparents", pt: "Avós" }, { en: "Uncle", pt: "Tio" },
+                        { en: "Parents", pt: "Pais" }, { en: "Aunt", pt: "Tia" },
+                        { en: "Sister", pt: "Irmã" }, { en: "Grandsister", pt: "Irmã-neta" },
+                        { en: "Brother", pt: "Irmão" }, { en: "Grandbrother", pt: "Irmão-neto" },
+                        { en: "Son", pt: "Filho" }, { en: "Grandson", pt: "Neto" },
+                        { en: "Daughter", pt: "Filha" }, { en: "Granddaughter", pt: "Neta" },
+                        { en: "Grandma", pt: "Vovó" }, { en: "Grandpa", pt: "Vovô" },
+                        { en: "Mother", pt: "Mãe" }, { en: "Father", pt: "Pai" }
+                    ],
+                    "⭐ Numbers": [
+                        { en: "One", pt: "1" }, { en: "Two", pt: "2" }, { en: "Three", pt: "3" },
+                        { en: "Four", pt: "4" }, { en: "Five", pt: "5" }, { en: "Six", pt: "6" },
+                        { en: "Seven", pt: "7" }, { en: "Eight", pt: "8" }, { en: "Nine", pt: "9" },
+                        { en: "Ten", pt: "10" }, { en: "Eleven", pt: "11" }, { en: "Twelve", pt: "12" },
+                        { en: "Thirteen", pt: "13" }, { en: "Fourteen", pt: "14" }, { en: "Fifteen", pt: "15" },
+                        { en: "Sixteen", pt: "16" }, { en: "Seventeen", pt: "17" }, { en: "Eighteen", pt: "18" },
+                        { en: "Nineteen", pt: "19" }, { en: "Twenty", pt: "20" }
+                    ],
+                    "⭐ Adjectives": [
+                        { en: "Favourite", pt: "Favorito" }, { en: "Big", pt: "Grande" },
+                        { en: "Old", pt: "Velho" }, { en: "Small", pt: "Pequeno" },
+                        { en: "Fat", pt: "Gordo" }, { en: "New", pt: "Novo" },
+                        { en: "Happy", pt: "Feliz" }, { en: "Quiet", pt: "Quieto" },
+                        { en: "Clever", pt: "Esperto" }, { en: "Beautiful", pt: "Bonito" },
+                        { en: "Straight", pt: "Liso" }, { en: "Funny", pt: "Engraçado" },
+                        { en: "Curly", pt: "Cacheado" }, { en: "Naughty", pt: "Malcriado" },
+                        { en: "Dirty", pt: "Sujo" }
+                    ],
+                    "⭐ Present Continuous": [
+                        { en: "My mother is reading", pt: "Minha mãe está lendo" },
+                        { en: "My father is eating a burger", pt: "Meu pai está comendo um hambúrguer" },
+                        { en: "The dog is jumping", pt: "O cachorro está pulando" },
+                        { en: "My sister is playing with a doll", pt: "Minha irmã está brincando com uma boneca" },
+                        { en: "The baby is laughing", pt: "O bebê está rindo" },
+                        { en: "My brother is kicking a ball", pt: "Meu irmão está chutando uma bola" },
+                        { en: "My grandma is singing", pt: "Minha vovó está cantando" },
+                        { en: "The farmer is walking", pt: "O fazendeiro está andando" },
+                        { en: "The cat is drinking", pt: "O gato está bebendo" },
+                        { en: "The doctor is talking", pt: "O médico está falando" },
+                        { en: "I am washing the bike", pt: "Eu estou lavando a bicicleta" },
+                        { en: "He is taking a photo", pt: "Ele está tirando uma foto" },
+                        { en: "The spider is bouncing", pt: "A aranha está quicando" },
+                        { en: "My grandpa is holding a book", pt: "Meu vovô está segurando um livro" },
+                        { en: "She is drawing a flower", pt: "Ela está desenhando uma flor" }
+                    ],
+                    "Body": [
+                        { en: "Eye", pt: "Olho" }, { en: "Hair", pt: "Cabelo" },
+                        { en: "Beard", pt: "Barba" }, { en: "Moustache", pt: "Bigode" }
+                    ],
+                    "Colours": [
+                        { en: "Purple", pt: "Roxo" }, { en: "Pink", pt: "Rosa" },
+                        { en: "Green", pt: "Verde" }, { en: "Black", pt: "Preto" },
+                        { en: "White", pt: "Branco" }, { en: "Blue", pt: "Azul" },
+                        { en: "Grey", pt: "Cinza" }
+                    ],
+                    "Animals": [
+                        { en: "Dog", pt: "Cachorro" }, { en: "Spider", pt: "Aranha" },
+                        { en: "Cat", pt: "Gato" }
+                    ],
+                    "Verbs": [
+                        { en: "Listen", pt: "Ouvir" }, { en: "Read", pt: "Ler" },
+                        { en: "Ask", pt: "Perguntar" }, { en: "Answer", pt: "Responder" },
+                        { en: "Write", pt: "Escrever" }, { en: "Talk", pt: "Falar" },
+                        { en: "Sit", pt: "Sentar" }, { en: "Drink", pt: "Beber" },
+                        { en: "Do", pt: "Fazer" }, { en: "Eat", pt: "Comer" },
+                        { en: "Kick", pt: "Chutar" }, { en: "Drive", pt: "Dirigir" },
+                        { en: "Walk", pt: "Andar" }, { en: "Hold", pt: "Segurar" },
+                        { en: "Find", pt: "Encontrar" }, { en: "Draw", pt: "Desenhar" },
+                        { en: "Ride", pt: "Andar de" }, { en: "Fly", pt: "Voar" },
+                        { en: "Play", pt: "Brincar" }, { en: "Paint", pt: "Pintar" },
+                        { en: "Swim", pt: "Nadar" }, { en: "Sing", pt: "Cantar" },
+                        { en: "Jump", pt: "Pular" }, { en: "Can", pt: "Poder" },
+                        { en: "Help", pt: "Ajudar" }, { en: "Have", pt: "Ter" },
+                        { en: "Like", pt: "Gostar" }, { en: "Have a bath", pt: "Tomar banho" },
+                        { en: "Love", pt: "Amar" }, { en: "Bounce", pt: "Quicar" },
+                        { en: "Wash", pt: "Lavar" }, { en: "Laugh", pt: "Rir" },
+                        { en: "Underline", pt: "Sublinhar" }, { en: "Take a photo", pt: "Tirar uma foto" }
+                    ],
+                    "Clothes": [
+                        { en: "Hat", pt: "Chapéu" }, { en: "Jacket", pt: "Jaqueta" }
+                    ],
+                    "Job": [
+                        { en: "Doctor", pt: "Médico" }, { en: "Farmer", pt: "Fazendeiro" }
+                    ],
+                    "Sentences": [
+                        { en: "I'm nine", pt: "Eu tenho 9 anos" },
+                        { en: "I'm eleven", pt: "Eu tenho 11 anos" },
+                        { en: "I've got a sister", pt: "Eu tenho uma irmã" },
+                        { en: "I've got a dog", pt: "Eu tenho um cachorro" },
+                        { en: "My sister is called Luna", pt: "Minha irmã se chama Luna" },
+                        { en: "What's your name?", pt: "Qual é o seu nome?" },
+                        { en: "How old are you?", pt: "Quantos anos você tem?" },
+                        { en: "This is my favourite toy", pt: "Este é meu brinquedo favorito" },
+                        { en: "It's on the table", pt: "Está na mesa" },
+                        { en: "It's in the box", pt: "Está dentro da caixa" },
+                        { en: "It's on the floor", pt: "Está no chão" },
+                        { en: "It's under the table", pt: "Está debaixo da mesa" },
+                        { en: "It's behind the bike", pt: "Está atrás da bicicleta" },
+                        { en: "It's between the book and the cake", pt: "Está entre o livro e o bolo" },
+                        { en: "What are you doing?", pt: "O que você está fazendo?" },
+                        { en: "What's Luna eating?", pt: "O que a Luna está comendo?" },
+                        { en: "I'm riding a bike", pt: "Eu estou andando de bicicleta" },
+                        { en: "I've got a fat doll", pt: "Eu tenho uma boneca gorda" },
+                        { en: "We've got toys", pt: "Nós temos brinquedos" },
+                        { en: "It's in front of the ball", pt: "Está na frente da bola" },
+                        { en: "It's next to the phone", pt: "Está ao lado do telefone" },
+                        { en: "I'm happy", pt: "Eu estou feliz" },
+                        { en: "Please help me!", pt: "Por favor me ajude!" },
+                        { en: "Who's Stella's uncle?", pt: "Quem é o tio da Stella?" },
+                        { en: "Who are Susy's parents?", pt: "Quem são os pais da Susy?" },
+                        { en: "How many toys have you got?", pt: "Quantos brinquedos você tem?" },
+                        { en: "She is with her mother", pt: "Ela está com a mãe dela" },
+                        { en: "I love flying my kite", pt: "Eu amo soltar minha pipa" },
+                        { en: "I like playing football", pt: "Eu gosto de jogar futebol" },
+                        { en: "I need a towel", pt: "Eu preciso de uma toalha" },
+                        { en: "Suzy wants to wash her dog", pt: "Suzy quer lavar o cachorro dela" },
+                        { en: "I enjoy eating a burger", pt: "Eu gosto de comer um hambúrguer" }
+                    ],
+                    "Other": [
+                        { en: "Table", pt: "Mesa" }, { en: "Book", pt: "Livro" },
+                        { en: "Box", pt: "Caixa" }, { en: "Ball", pt: "Bola" },
+                        { en: "Floor", pt: "Chão" }, { en: "Train", pt: "Trem" },
+                        { en: "Bike", pt: "Bicicleta" }, { en: "Game", pt: "Jogo" },
+                        { en: "Computer", pt: "Computador" }, { en: "Toy", pt: "Brinquedo" },
+                        { en: "Hello", pt: "Olá" }, { en: "Hi", pt: "Oi" },
+                        { en: "Cake", pt: "Bolo" }, { en: "Kite", pt: "Pipa" },
+                        { en: "Sorry", pt: "Desculpe" }, { en: "Phone", pt: "Telefone" },
+                        { en: "Please", pt: "Por favor" }, { en: "House", pt: "Casa" },
+                        { en: "Tail", pt: "Cauda" }, { en: "Towel", pt: "Toalha" },
+                        { en: "Picture", pt: "Quadro" }, { en: "Doll", pt: "Boneca" },
+                        { en: "Helmet", pt: "Capacete" }, { en: "Burger", pt: "Hambúrguer" },
+                        { en: "Flower", pt: "Flor" }, { en: "Robot", pt: "Robô" },
+                        { en: "School", pt: "Escola" }
+                    ],
+                }
+            },
+            "P2": { themes: {} },
+            "P3": { themes: {} }
+        };
+
+        // --- STATE ---
+        let currentScreen = 'home';
+        let currentProva = null;
+        let currentTheme = null;
+        let currentLevel = null;
+        let questionList = [];
+        let wrongAnswers = [];
+        let currentIndex = 0;
+        let isReviewing = false;
+        let showNextButton = false;
+        let attemptCount = 0;
+        let selectedWrongIndices = []; 
+        let finishedCurrentQuestion = false;
+
+        let userProgress = JSON.parse(localStorage.getItem('english_quest_progress')) || {};
+        let isAllCaps = localStorage.getItem('english_quest_caps') === 'true';
+
+        // --- DOM ELEMENTS ---
+        const container = document.getElementById('main-container');
+        const screenTitle = document.getElementById('screen-title');
+        const backBtn = document.getElementById('back-btn');
+        const feedback = document.getElementById('feedback');
+        const feedbackText = document.getElementById('feedback-text');
+
+        // --- UTILS ---
+        function formatText(text) {
+            return isAllCaps ? String(text).toUpperCase() : String(text);
+        }
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function speak(text, lang = 'en-US', onComplete = null) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = lang; 
+            utterance.rate = 0.8; 
+            if (onComplete) {
+                utterance.onend = onComplete;
+            }
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function setScreen(screen) {
+            currentScreen = screen;
+            render();
+        }
+
+        backBtn.onclick = () => {
+            if (currentScreen === 'vocabulary') setScreen('themes');
+            else if (currentScreen === 'game') setScreen('levels');
+            else if (currentScreen === 'levels') setScreen('themes');
+            else if (currentScreen === 'themes') setScreen('home');
+        };
+
+        function startTheme(prova, theme, level) {
+            currentProva = prova;
+            currentTheme = theme;
+            currentLevel = level;
+            questionList = [...PROVAS[prova].themes[theme]];
+            shuffle(questionList);
+            wrongAnswers = [];
+            currentIndex = 0;
+            isReviewing = false;
+            resetQuestionState();
+            setScreen('game');
+            playQuestion();
+        }
+
+        function resetQuestionState() {
+            showNextButton = false;
+            attemptCount = 0;
+            selectedWrongIndices = [];
+            finishedCurrentQuestion = false;
+            window._currentOpts = null; 
+            window._currentId = null;
+            window._suggestionsRevealed = false; 
+        }
+
+        function playQuestion() {
+            resetQuestionState();
+            const current = questionList[currentIndex];
+            if (currentLevel === 1) speak(current.en);
+            else if (currentLevel === 2) speak(current.pt, 'pt-BR');
+            else if (currentLevel === 3) speak(current.en);
+            render();
+        }
+
+        function checkAnswer(selectedObj, correctObj, btnIndex) {
+            if (finishedCurrentQuestion) return; 
+            const isCorrect = selectedObj.en === correctObj.en;
+            attemptCount++;
+            
+            if (isCorrect) {
+                finishedCurrentQuestion = true;
+                showFeedback(formatText('Muito bem! 🌟'), '#48bb78');
+                speak("Well done"); 
+                triggerFinalReview(correctObj, true); 
+            } else {
+                selectedWrongIndices.push(btnIndex);
+                const current = questionList[currentIndex];
+                if (!wrongAnswers.some(q => q.en === current.en)) {
+                    wrongAnswers.push(current);
+                }
+                if (attemptCount === 1) {
+                    showFeedback(formatText('Tente outra vez!'), '#f56565');
+                    speak("Try again"); 
+                    render();
+                } else {
+                    finishedCurrentQuestion = true;
+                    showFeedback(formatText('Vamos ver a correta!'), '#f56565');
+                    speak("Let's see the correct one"); 
+                    triggerFinalReview(correctObj, false); 
+                }
+            }
+        }
+
+        function triggerFinalReview(correctObj, wasCorrect) {
+            render(); 
+            setTimeout(() => {
+                const first = currentLevel === 2 ? { text: correctObj.pt, lang: 'pt-BR' } : { text: correctObj.en, lang: 'en-US' };
+                const second = currentLevel === 2 ? { text: correctObj.en, lang: 'en-US' } : { text: correctObj.pt, lang: 'pt-BR' };
+                speak(first.text, first.lang, () => {
+                    setTimeout(() => {
+                        speak(second.text, second.lang, () => {
+                            const delay = wasCorrect ? 2000 : 5000;
+                            setTimeout(() => {
+                                showNextButton = true;
+                                render(); 
+                            }, delay);
+                        });
+                    }, 500);
+                });
+            }, 500);
+        }
+
+        function nextQuestion() {
+            currentIndex++;
+            if (currentIndex >= questionList.length) {
+                if (wrongAnswers.length > 0) {
+                    questionList = [...wrongAnswers];
+                    wrongAnswers = [];
+                    currentIndex = 0;
+                    isReviewing = true;
+                    playQuestion();
+                } else {
+                    saveProgress();
+                    setScreen('finish');
+                }
+            } else {
+                playQuestion();
+            }
+        }
+
+        function saveProgress() {
+            if (!userProgress[currentTheme]) userProgress[currentTheme] = [];
+            if (!userProgress[currentTheme].includes(currentLevel)) {
+                userProgress[currentTheme].push(currentLevel);
+                localStorage.setItem('english_quest_progress', JSON.stringify(userProgress));
+            }
+        }
+
+        function getOptions(correct, allPool) {
+            if (window._currentOpts && window._currentId === currentIndex) return window._currentOpts;
+            let opts = [correct];
+            let pool = allPool.filter(p => p.en !== correct.en);
+            shuffle(pool);
+            opts.push(...pool.slice(0, 2));
+            shuffle(opts);
+            window._currentOpts = opts;
+            window._currentId = currentIndex;
+            return opts;
+        }
+
+        function showFeedback(text, color) {
+            feedbackText.innerText = text;
+            feedback.querySelector('div').style.borderColor = color;
+            feedbackText.style.color = color;
+            feedback.classList.remove('opacity-0');
+            setTimeout(() => {
+                feedback.classList.add('opacity-0');
+            }, 1500);
+        }
+
+        function renderHome() {
+            screenTitle.innerText = "Meus Estudos";
+            const toggleContainer = document.createElement('div');
+            toggleContainer.className = "flex justify-center mb-6";
+            const capsBtn = document.createElement('button');
+            capsBtn.className = `p-4 rounded-2xl font-bold border-2 border-blue-600 transition-all btn-bounce ${isAllCaps ? 'toggle-active' : 'bg-white text-blue-600'}`;
+            capsBtn.innerText = isAllCaps ? "MAIÚSCULAS: ATIVADO" : "Maiúsculas: Desativado";
+            capsBtn.onclick = () => {
+                isAllCaps = !isAllCaps;
+                localStorage.setItem('english_quest_caps', isAllCaps);
+                render();
+            };
+            toggleContainer.appendChild(capsBtn);
+            container.appendChild(toggleContainer);
+
+            Object.keys(PROVAS).forEach(prova => {
+                const btn = document.createElement('button');
+                btn.className = "card p-8 text-3xl font-bold btn-bounce bg-white border-b-8 border-blue-200 active:border-b-0";
+                btn.innerText = prova;
+                btn.onclick = () => { currentProva = prova; setScreen('themes'); };
+                container.appendChild(btn);
+            });
+        }
+
+        function renderThemes() {
+            screenTitle.innerText = `Temas de ${currentProva}`;
+            Object.keys(PROVAS[currentProva].themes).forEach(theme => {
+                const themeData = PROVAS[currentProva].themes[theme];
+                const completedCount = (userProgress[theme] || []).length;
+                
+                const themeCard = document.createElement('div');
+                themeCard.className = "card p-5 flex justify-between items-center border-b-4 border-yellow-200 cursor-pointer transition-all hover:bg-gray-50 active:scale-95";
+                themeCard.onclick = () => { currentTheme = theme; setScreen('levels'); };
+                
+                const leftArea = document.createElement('div');
+                leftArea.className = "flex flex-col items-start text-left";
+                leftArea.innerHTML = `
+                    <span class="text-2xl font-bold">${theme}</span>
+                    <span class="text-sm opacity-60">${completedCount}/3 níveis feitos</span>
+                `;
+                
+                const rightArea = document.createElement('div');
+                rightArea.className = "flex flex-col items-end gap-2";
+                
+                const topIcons = document.createElement('div');
+                topIcons.className = "flex items-center gap-2";
+                if (completedCount === 3) topIcons.innerHTML += '<span>✅</span>';
+
+                const vocabBtn = document.createElement('button');
+                vocabBtn.className = "text-xs font-bold text-blue-600 bg-blue-50 py-2 px-3 rounded-xl border border-blue-100 hover:bg-blue-100 transition-colors";
+                vocabBtn.innerText = formatText(`📖 ${themeData.length} termos`);
+                vocabBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    currentTheme = theme;
+                    setScreen('vocabulary');
+                };
+
+                rightArea.appendChild(topIcons);
+                rightArea.appendChild(vocabBtn);
+                themeCard.appendChild(leftArea);
+                themeCard.appendChild(rightArea);
+                container.appendChild(themeCard);
+            });
+        }
+
+        function renderVocabulary() {
+            screenTitle.innerText = formatText(`Lista: ${currentTheme}`);
+            const words = [...PROVAS[currentProva].themes[currentTheme]];
+            words.sort((a, b) => a.en.localeCompare(b.en));
+
+            const tableWrap = document.createElement('div');
+            tableWrap.className = "overflow-y-auto max-h-[70vh] px-1";
+            
+            const table = document.createElement('table');
+            table.className = "vocab-table";
+            table.innerHTML = `
+                <thead>
+                    <tr class="bg-transparent">
+                        <th class="text-left p-3 opacity-50 text-sm">English</th>
+                        <th class="text-left p-3 opacity-50 text-sm">Brasil</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${words.map(w => `
+                        <tr>
+                            <td>${formatText(w.en)}</td>
+                            <td>${formatText(w.pt)}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            `;
+            
+            tableWrap.appendChild(table);
+            container.appendChild(tableWrap);
+
+            const bottomBtn = document.createElement('button');
+            bottomBtn.className = "w-full bg-blue-600 text-white p-5 rounded-2xl text-xl font-bold btn-bounce mt-4 shadow-lg";
+            bottomBtn.innerText = formatText("Voltar");
+            bottomBtn.onclick = () => setScreen('themes');
+            container.appendChild(bottomBtn);
+        }
+
+        function renderLevels() {
+            screenTitle.innerText = currentTheme;
+            const levels = [{ id: 1, title: "Nível 1", sub: "Inglês → Português" }, { id: 2, title: "Nível 2", sub: "Português → Inglês" }, { id: 3, title: "Nível 3", sub: "🎧 Só Áudio" }];
+            const completedForTheme = userProgress[currentTheme] || [];
+            levels.forEach(l => {
+                const isCompleted = completedForTheme.includes(l.id);
+                const btn = document.createElement('button');
+                btn.className = `card p-6 flex flex-col items-center btn-bounce border-b-4 ${isCompleted ? 'border-green-400' : 'border-green-200'}`;
+                btn.innerHTML = `<div class="flex items-center gap-2"><span class="text-2xl font-bold">${l.title}</span>${isCompleted ? '<span class="text-green-600">✓</span>' : ''}</div><span class="text-sm opacity-60">${l.sub}</span>`;
+                btn.onclick = () => startTheme(currentProva, currentTheme, l.id);
+                container.appendChild(btn);
+            });
+        }
+
+        function renderGame() {
+            const current = questionList[currentIndex];
+            const allItems = PROVAS[currentProva].themes[currentTheme];
+            let options = getOptions(current, allItems);
+            
+            screenTitle.innerText = isReviewing ? formatText("Revisão") : `${formatText("Questão")} ${currentIndex + 1}/${questionList.length}`;
+            
+            const promptCard = document.createElement('div');
+            promptCard.className = "card p-8 flex flex-col items-center justify-center mb-4";
+            
+            if (currentLevel === 3) {
+                const playBtn = document.createElement('button');
+                playBtn.className = "text-6xl p-6 bg-blue-100 rounded-full btn-bounce shadow-inner";
+                playBtn.innerHTML = "🔊";
+                playBtn.onclick = () => speak(current.en);
+                promptCard.appendChild(playBtn);
+                const repeatTxt = document.createElement('p');
+                repeatTxt.className = "mt-4 text-blue-600 font-bold";
+                repeatTxt.innerText = formatText("Toque para ouvir");
+                promptCard.appendChild(repeatTxt);
+            } else {
+                let questionPrompt = currentLevel === 1 ? current.en : current.pt;
+                promptCard.innerHTML = `<h2 class="text-4xl font-bold text-center">${formatText(questionPrompt)}</h2>`;
+            }
+            container.appendChild(promptCard);
+
+            const isHiddenTheme = currentTheme === "⭐ Present Continuous" || currentTheme === "Sentences";
+            const hideOptions = isHiddenTheme && !window._suggestionsRevealed && !finishedCurrentQuestion;
+
+            if (hideOptions) {
+                const sugBtn = document.createElement('button');
+                sugBtn.className = "w-full bg-yellow-400 text-yellow-900 p-6 rounded-2xl text-2xl font-bold btn-bounce shadow-lg flex items-center justify-center gap-3 mt-4 border-b-8 border-yellow-500 active:border-b-0";
+                sugBtn.innerHTML = `💡 ${formatText("Sugestões")}`;
+                sugBtn.onclick = () => {
+                    window._suggestionsRevealed = true;
+                    render();
+                };
+                container.appendChild(sugBtn);
+            } else {
+                const grid = document.createElement('div');
+                grid.id = 'options-grid';
+                grid.className = `grid gap-4 mb-4 ${finishedCurrentQuestion ? 'reveal-all' : ''}`;
+                
+                options.forEach((opt, index) => {
+                    const btn = document.createElement('button');
+                    btn.className = `option-btn card p-4 border-4 border-transparent btn-bounce transition-all`;
+                    if (selectedWrongIndices.includes(index)) btn.classList.add('wrong', 'revealed-single');
+                    if (finishedCurrentQuestion && opt.en === current.en) btn.classList.add('correct', 'highlight');
+                    
+                    if (currentLevel === 2) {
+                        btn.innerHTML = `<span class="option-text-main">${formatText(opt.en)}</span><span class="option-text-sub">(${formatText(opt.pt)})</span>`;
+                    } else {
+                        btn.innerHTML = `<span class="option-text-main">${formatText(opt.pt)}</span><span class="option-text-sub">(${formatText(opt.en)})</span>`;
+                    }
+                    
+                    btn.onclick = () => checkAnswer(opt, current, index);
+                    grid.appendChild(btn);
+                });
+                container.appendChild(grid);
+            }
+
+            if (showNextButton) {
+                const nextBtn = document.createElement('button');
+                nextBtn.className = "w-full bg-blue-600 text-white p-6 rounded-2xl text-2xl font-bold btn-bounce shadow-xl flex items-center justify-center gap-3 animate-pulse";
+                nextBtn.innerHTML = `${formatText("Próximo")} <span class="text-3xl">→</span>`;
+                nextBtn.onclick = nextQuestion;
+                container.appendChild(nextBtn);
+            }
+        }
+
+        function renderFinish() {
+            screenTitle.innerText = formatText("Parabéns!");
+            container.innerHTML = `<div class="card p-10 text-center flex flex-col gap-6"><div class="text-6xl">🏆</div><h2 class="text-3xl font-bold">${formatText("Incrível!")}</h2><p class="text-xl">${formatText("Você terminou o")} <b>${formatText("Nível " + currentLevel)}</b>!</p><button id="finish-btn" class="bg-blue-600 text-white p-6 rounded-2xl text-2xl font-bold btn-bounce mt-4 shadow-lg">${formatText("Continuar")}</button></div>`;
+            document.getElementById('finish-btn').onclick = () => setScreen('levels');
+            speak("Incrível! Excelente trabalho!", "pt-BR");
+        }
+
+        function render() {
+            container.innerHTML = '';
+            backBtn.classList.toggle('hidden', currentScreen === 'home');
+            switch (currentScreen) {
+                case 'home': renderHome(); break;
+                case 'themes': renderThemes(); break;
+                case 'vocabulary': renderVocabulary(); break;
+                case 'levels': renderLevels(); break;
+                case 'game': renderGame(); break;
+                case 'finish': renderFinish(); break;
+            }
+        }
+
+        render();
+    </script>
+</body>
+</html>
