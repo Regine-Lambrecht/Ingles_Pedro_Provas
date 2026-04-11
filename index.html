@@ -29,18 +29,25 @@
             border-color: #c53030 !important;
         }
         .highlight {
-            border: 4px solid #48bb78 !important;
+            border: 3px solid #48bb78 !important;
             animation: pulse 1.5s infinite;
         }
         @keyframes pulse {
             0% { transform: scale(1); }
-            50% { transform: scale(1.02); }
+            50% { transform: scale(1.01); }
             100% { transform: scale(1); }
         }
         .card {
             background: white;
-            border-radius: 16px;
+            border-radius: 12px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        /* Special class for inverted questions */
+        .card-inverted {
+            background: #000000 !important;
+            color: #ffffff !important;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
         }
         .locked {
             opacity: 0.5;
@@ -50,21 +57,19 @@
         }
         .option-text-main {
             display: block;
-            font-size: 1.15rem;
+            font-size: 1rem;
             font-weight: 700;
         }
         .option-text-sub {
             display: block;
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             font-weight: 400;
             opacity: 0; 
             transition: opacity 0.3s ease;
         }
-        /* Reveal for a specific button */
         .revealed-single .option-text-sub {
             opacity: 0.85;
         }
-        /* Reveal for all buttons when parent container has this class */
         .reveal-all .option-text-sub {
             opacity: 0.85;
         }
@@ -72,32 +77,30 @@
             background-color: #3182ce !important;
             color: white !important;
         }
-        /* Table Styles */
         .vocab-table {
             width: 100%;
             border-collapse: separate;
-            border-spacing: 0 4px;
+            border-spacing: 0 2px;
         }
         .vocab-table tr {
             background: white;
-            border-radius: 10px;
+            border-radius: 8px;
         }
         .vocab-table td {
-            padding: 8px 12px;
+            padding: 6px 10px;
             border-top: 1px solid #e2e8f0;
             border-bottom: 1px solid #e2e8f0;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
         .vocab-table td:first-child {
             border-left: 1px solid #e2e8f0;
-            border-radius: 10px 0 0 10px;
+            border-radius: 8px 0 0 8px;
             font-weight: 700;
         }
         .vocab-table td:last-child {
             border-right: 1px solid #e2e8f0;
-            border-radius: 0 10px 10px 0;
+            border-radius: 0 8px 8px 0;
         }
-        /* Key Term Highlight - Used only in Glossary */
         .key-term {
             color: #e53e3e !important; 
         }
@@ -105,26 +108,21 @@
 </head>
 <body class="min-h-screen flex flex-col">
 
-    <div id="app" class="flex-grow flex flex-col p-3 max-w-md mx-auto w-full">
-        <!-- Navigation Header -->
-        <div id="header" class="flex items-center justify-between mb-4">
-            <button id="back-btn" class="hidden text-blue-600 font-bold py-1.5 px-3 rounded-full border-2 border-blue-600 bg-white text-sm">← Voltar</button>
-            <h1 id="screen-title" class="text-xl font-bold text-center flex-grow">English Quest</h1>
+    <div id="app" class="flex-grow flex flex-col p-2 max-w-md mx-auto w-full">
+        <div id="header" class="flex items-center justify-between mb-2">
+            <button id="back-btn" class="hidden text-blue-600 font-bold py-1 px-3 rounded-full border-2 border-blue-600 bg-white text-base">←</button>
+            <h1 id="screen-title" class="text-lg font-bold text-center flex-grow">English Quest</h1>
         </div>
-
-        <!-- Main Content Area -->
-        <div id="main-container" class="flex-grow flex flex-col justify-start gap-3"></div>
+        <div id="main-container" class="flex-grow flex flex-col justify-start gap-2"></div>
     </div>
 
-    <!-- Feedback Overlay -->
     <div id="feedback" class="fixed inset-0 flex items-center justify-center pointer-events-none opacity-0 transition-opacity duration-300 z-50">
-        <div class="bg-white p-6 rounded-3xl shadow-2xl border-4 transform scale-110">
-            <span id="feedback-text" class="text-2xl font-bold text-center block px-4"></span>
+        <div class="bg-white p-4 rounded-2xl shadow-2xl border-4 transform scale-100">
+            <span id="feedback-text" class="text-xl font-bold text-center block px-2"></span>
         </div>
     </div>
 
     <script>
-        // --- DATA ---
         const PROVAS = {
             "P1": {
                 themes: {
@@ -206,12 +204,12 @@
                         { en: "*Who's Stella's uncle?", pt: "Quem é o tio da Stella?" },
                         { en: "*Who are Susy's parents?", pt: "Quem são os pais da Susy?" },
                         { en: "How many toys have you got?", pt: "Quantos brinquedos você tem?" },
+                        { en: "She is with her mother", pt: "Ela está com a mãe dela" },
                         { en: "*I love flying my kite", pt: "Eu amo soltar minha pipa" },
                         { en: "*I like playing football", pt: "Eu gosto de jogar futebol" },
                         { en: "I need a towel", pt: "Eu preciso de uma toalha" },
                         { en: "*Suzy wants to wash her dog", pt: "Suzy quer lavar o cachorro dela" },
-                        { en: "*I enjoy eating a burger", pt: "Eu gosto de comer um hambúrguer" },
-                        { en: "She is with her mother", pt: "Ela está com a mãe dela" }
+                        { en: "*I enjoy eating a burger", pt: "Eu gosto de comer um hambúrguer" }
                     ],
                     "Body": [
                         { en: "Eye", pt: "Olho" }, { en: "*Hair", pt: "Cabelo" },
@@ -270,7 +268,6 @@
             "P3": { themes: {} }
         };
 
-        // --- STATE ---
         let currentScreen = 'home';
         let currentProva = null;
         let currentTheme = null;
@@ -288,14 +285,12 @@
         let userProgress = JSON.parse(localStorage.getItem('english_quest_progress')) || {};
         let isAllCaps = localStorage.getItem('english_quest_caps') === 'true';
 
-        // --- DOM ELEMENTS ---
         const container = document.getElementById('main-container');
         const screenTitle = document.getElementById('screen-title');
         const backBtn = document.getElementById('back-btn');
         const feedback = document.getElementById('feedback');
         const feedbackText = document.getElementById('feedback-text');
 
-        // --- UTILS ---
         function formatText(text) {
             return isAllCaps ? String(text).toUpperCase() : String(text);
         }
@@ -401,15 +396,15 @@
                 speak(first.text, first.lang, () => {
                     setTimeout(() => {
                         speak(second.text, second.lang, () => {
-                            const delay = wasCorrect ? 1000 : 3000;
+                            const delay = wasCorrect ? 1000 : 2500;
                             setTimeout(() => {
                                 showNextButton = true;
                                 render(); 
                             }, delay);
                         });
-                    }, 400);
+                    }, 300);
                 });
-            }, 400);
+            }, 300);
         }
 
         function nextQuestion() {
@@ -457,16 +452,16 @@
             feedback.classList.remove('opacity-0');
             setTimeout(() => {
                 feedback.classList.add('opacity-0');
-            }, 1200);
+            }, 1000);
         }
 
         function renderHome() {
             container.innerHTML = '';
             screenTitle.innerText = "Meus Estudos";
             const toggleContainer = document.createElement('div');
-            toggleContainer.className = "flex justify-center mb-4";
+            toggleContainer.className = "flex justify-center mb-2";
             const capsBtn = document.createElement('button');
-            capsBtn.className = `p-3 rounded-xl font-bold border-2 border-blue-600 transition-all btn-bounce text-sm ${isAllCaps ? 'toggle-active' : 'bg-white text-blue-600'}`;
+            capsBtn.className = `p-2 rounded-lg font-bold border-2 border-blue-600 transition-all btn-bounce text-xs ${isAllCaps ? 'toggle-active' : 'bg-white text-blue-600'}`;
             capsBtn.innerText = isAllCaps ? "MAIÚSCULAS: ATIVADO" : "Maiúsculas: Desativado";
             capsBtn.onclick = () => {
                 isAllCaps = !isAllCaps;
@@ -478,7 +473,7 @@
 
             Object.keys(PROVAS).forEach(prova => {
                 const btn = document.createElement('button');
-                btn.className = "card p-6 text-2xl font-bold btn-bounce bg-white border-b-4 border-blue-200 active:border-b-0 mb-3";
+                btn.className = "card p-4 text-xl font-bold btn-bounce bg-white border-b-4 border-blue-200 active:border-b-0 mb-2";
                 btn.innerText = prova;
                 btn.onclick = () => { currentProva = prova; setScreen('themes'); };
                 container.appendChild(btn);
@@ -493,26 +488,26 @@
                 const completedCount = (userProgress[theme] || []).length;
                 
                 const themeCard = document.createElement('div');
-                themeCard.className = "card p-3.5 flex justify-between items-center border-b-4 border-yellow-200 cursor-pointer transition-all hover:bg-gray-50 active:scale-95 mb-2.5";
+                themeCard.className = "card p-2.5 flex justify-between items-center border-b-4 border-yellow-200 cursor-pointer transition-all hover:bg-gray-50 active:scale-95 mb-1.5";
                 themeCard.onclick = () => { currentTheme = theme; setScreen('levels'); };
                 
                 const leftArea = document.createElement('div');
                 leftArea.className = "flex flex-col items-start text-left";
                 leftArea.innerHTML = `
-                    <span class="text-lg font-bold">${theme}</span>
-                    <span class="text-xs opacity-60">${completedCount}/3 níveis feitos</span>
+                    <span class="text-base font-bold">${theme}</span>
+                    <span class="text-[10px] opacity-60">${completedCount}/3 feitos</span>
                 `;
                 
                 const rightArea = document.createElement('div');
                 rightArea.className = "flex flex-col items-end gap-1";
                 
                 const topIcons = document.createElement('div');
-                topIcons.className = "flex items-center gap-1.5";
-                if (completedCount === 3) topIcons.innerHTML += '<span class="text-sm">✅</span>';
+                topIcons.className = "flex items-center gap-1";
+                if (completedCount === 3) topIcons.innerHTML += '<span class="text-xs">✅</span>';
 
                 const vocabBtn = document.createElement('button');
-                vocabBtn.className = "text-[10px] font-bold text-blue-600 bg-blue-50 py-1 px-2 rounded-lg border border-blue-100 hover:bg-blue-100 transition-colors";
-                vocabBtn.innerText = formatText(`📖 ${themeData.length} termos`);
+                vocabBtn.className = "text-[9px] font-bold text-blue-600 bg-blue-50 py-0.5 px-1.5 rounded-md border border-blue-100 hover:bg-blue-100 transition-colors";
+                vocabBtn.innerText = formatText(`📖 ${themeData.length}`);
                 vocabBtn.onclick = (e) => {
                     e.stopPropagation();
                     currentTheme = theme;
@@ -539,7 +534,7 @@
             }
 
             const filterBtn = document.createElement('button');
-            filterBtn.className = `w-full p-3 mb-3 rounded-xl font-bold border-2 transition-all btn-bounce text-sm ${vocabOnlyStars ? 'bg-yellow-400 border-yellow-500 text-yellow-900' : 'bg-white border-blue-600 text-blue-600'}`;
+            filterBtn.className = `w-full p-2 mb-2 rounded-lg font-bold border-2 transition-all btn-bounce text-xs ${vocabOnlyStars ? 'bg-yellow-400 border-yellow-500 text-yellow-900' : 'bg-white border-blue-600 text-blue-600'}`;
             filterBtn.innerText = vocabOnlyStars ? formatText("* Mostrando Principais") : formatText("Mostrar apenas Principais (*)");
             filterBtn.onclick = () => {
                 vocabOnlyStars = !vocabOnlyStars;
@@ -548,21 +543,21 @@
             container.appendChild(filterBtn);
 
             const tableWrap = document.createElement('div');
-            tableWrap.className = "overflow-y-auto max-h-[60vh] px-1";
+            tableWrap.className = "overflow-y-auto max-h-[65vh] px-1";
             
             if (words.length === 0) {
                 const empty = document.createElement('div');
-                empty.className = "p-6 text-center opacity-50 font-bold text-sm";
-                empty.innerText = formatText("Nenhum termo principal encontrado.");
+                empty.className = "p-4 text-center opacity-50 font-bold text-xs";
+                empty.innerText = formatText("Nenhum principal encontrado.");
                 tableWrap.appendChild(empty);
             } else {
                 const table = document.createElement('table');
                 table.className = "vocab-table";
                 table.innerHTML = `
                     <thead>
-                        <tr class="bg-transparent text-xs opacity-50">
-                            <th class="text-left p-2">English</th>
-                            <th class="text-left p-2">Brasil</th>
+                        <tr class="bg-transparent text-[10px] opacity-50">
+                            <th class="text-left p-1.5">English</th>
+                            <th class="text-left p-1.5">Brasil</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -583,7 +578,7 @@
             container.appendChild(tableWrap);
 
             const bottomBtn = document.createElement('button');
-            bottomBtn.className = "w-full bg-blue-600 text-white p-4 rounded-xl text-lg font-bold btn-bounce mt-3 shadow-lg";
+            bottomBtn.className = "w-full bg-blue-600 text-white p-3 rounded-lg text-base font-bold btn-bounce mt-2 shadow-lg";
             bottomBtn.innerText = formatText("Voltar");
             bottomBtn.onclick = () => setScreen('themes');
             container.appendChild(bottomBtn);
@@ -599,15 +594,15 @@
                 const isLocked = index > 0 && !completedForTheme.includes(levels[index - 1].id);
 
                 const btn = document.createElement('button');
-                btn.className = `card p-5 flex flex-col items-center btn-bounce border-b-4 ${isCompleted ? 'border-green-400' : 'border-green-200'} ${isLocked ? 'locked' : ''} mb-3`;
+                btn.className = `card p-4 flex flex-col items-center btn-bounce border-b-4 ${isCompleted ? 'border-green-400' : 'border-green-200'} ${isLocked ? 'locked' : ''} mb-2`;
                 
                 btn.innerHTML = `
-                    <div class="flex items-center gap-2">
-                        <span class="text-xl font-bold">${l.title}</span>
-                        ${isCompleted ? '<span class="text-green-600">✓</span>' : ''}
-                        ${isLocked ? '<span class="text-sm">🔒</span>' : ''}
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-lg font-bold">${l.title}</span>
+                        ${isCompleted ? '<span class="text-green-600 text-sm">✓</span>' : ''}
+                        ${isLocked ? '<span class="text-xs">🔒</span>' : ''}
                     </div>
-                    <span class="text-xs opacity-60">${l.sub}</span>
+                    <span class="text-[10px] opacity-60">${l.sub}</span>
                 `;
                 
                 if (!isLocked) {
@@ -623,24 +618,25 @@
             const allItems = PROVAS[currentProva].themes[currentTheme];
             let options = getOptions(current, allItems);
             
-            screenTitle.innerText = isReviewing ? formatText("Revisão") : `${formatText("Questão")} ${currentIndex + 1}/${questionList.length}`;
+            screenTitle.innerText = isReviewing ? formatText("Revisão") : `${currentIndex + 1}/${questionList.length}`;
             
+            // Reverted Colors for promptCard: Black background, White text
             const promptCard = document.createElement('div');
-            promptCard.className = "card p-6 flex flex-col items-center justify-center mb-3 min-h-[100px]";
+            promptCard.className = "card-inverted p-4 flex flex-col items-center justify-center mb-2 min-h-[80px]";
             
             if (currentLevel === 3) {
                 const playBtn = document.createElement('button');
-                playBtn.className = "text-4xl p-4 bg-blue-100 rounded-full btn-bounce shadow-inner";
+                playBtn.className = "text-3xl p-3 bg-gray-800 text-white rounded-full btn-bounce shadow-inner border border-gray-600";
                 playBtn.innerHTML = "🔊";
                 playBtn.onclick = () => speak(current.en);
                 promptCard.appendChild(playBtn);
                 const repeatTxt = document.createElement('p');
-                repeatTxt.className = "mt-2 text-blue-600 font-bold text-sm";
-                repeatTxt.innerText = formatText("Toque para ouvir");
+                repeatTxt.className = "mt-1 text-gray-300 font-bold text-xs";
+                repeatTxt.innerText = formatText("Ouvir");
                 promptCard.appendChild(repeatTxt);
             } else {
                 let questionPrompt = currentLevel === 1 ? current.en : current.pt;
-                promptCard.innerHTML = `<h2 class="text-2xl font-bold text-center leading-tight">${formatText(questionPrompt)}</h2>`;
+                promptCard.innerHTML = `<h2 class="text-xl font-bold text-center leading-tight text-white">${formatText(questionPrompt)}</h2>`;
             }
             container.appendChild(promptCard);
 
@@ -649,7 +645,7 @@
 
             if (hideOptions) {
                 const sugBtn = document.createElement('button');
-                sugBtn.className = "w-full bg-yellow-400 text-yellow-900 p-4 rounded-xl text-xl font-bold btn-bounce shadow-lg flex items-center justify-center gap-3 mt-2 border-b-4 border-yellow-500 active:border-b-0";
+                sugBtn.className = "w-full bg-yellow-400 text-yellow-900 p-3 rounded-lg text-lg font-bold btn-bounce shadow-lg flex items-center justify-center gap-2 mt-1 border-b-4 border-yellow-500 active:border-b-0";
                 sugBtn.innerHTML = `💡 ${formatText("Sugestões")}`;
                 sugBtn.onclick = () => {
                     window._suggestionsRevealed = true;
@@ -659,11 +655,11 @@
             } else {
                 const grid = document.createElement('div');
                 grid.id = 'options-grid';
-                grid.className = `grid gap-2.5 mb-2 ${finishedCurrentQuestion ? 'reveal-all' : ''}`;
+                grid.className = `grid gap-2 mb-1.5 ${finishedCurrentQuestion ? 'reveal-all' : ''}`;
                 
                 options.forEach((opt, index) => {
                     const btn = document.createElement('button');
-                    btn.className = `option-btn card p-3 border-2 border-transparent btn-bounce transition-all min-h-[60px] flex flex-col justify-center items-center`;
+                    btn.className = `option-btn card p-2.5 border-2 border-transparent btn-bounce transition-all min-h-[50px] flex flex-col justify-center items-center bg-white text-black`;
                     if (selectedWrongIndices.includes(index)) btn.classList.add('wrong', 'revealed-single');
                     if (finishedCurrentQuestion && opt.en === current.en) btn.classList.add('correct', 'highlight');
                     
@@ -681,7 +677,7 @@
 
             if (showNextButton) {
                 const nextBtn = document.createElement('button');
-                nextBtn.className = "w-full bg-blue-600 text-white p-4 rounded-xl text-xl font-bold btn-bounce shadow-xl flex items-center justify-center gap-2 animate-pulse mt-1 border-b-4 border-blue-800 active:border-b-0";
+                nextBtn.className = "w-full bg-blue-600 text-white p-3 rounded-lg text-lg font-bold btn-bounce shadow-xl flex items-center justify-center gap-2 animate-pulse mt-0.5 border-b-4 border-blue-800 active:border-b-0";
                 nextBtn.innerHTML = `${formatText("Próximo")} <span class="text-xl">→</span>`;
                 nextBtn.onclick = nextQuestion;
                 container.appendChild(nextBtn);
@@ -691,7 +687,7 @@
         function renderFinish() {
             container.innerHTML = '';
             screenTitle.innerText = formatText("Parabéns!");
-            container.innerHTML = `<div class="card p-8 text-center flex flex-col gap-4"><div class="text-5xl">🏆</div><h2 class="text-2xl font-bold">${formatText("Incrível!")}</h2><p class="text-lg">${formatText("Você terminou o")} <b>${formatText("Nível " + currentLevel)}</b>!</p><button id="finish-btn" class="bg-blue-600 text-white p-4 rounded-xl text-xl font-bold btn-bounce mt-2 shadow-lg">${formatText("Continuar")}</button></div>`;
+            container.innerHTML = `<div class="card p-6 text-center flex flex-col gap-3"><div class="text-4xl">🏆</div><h2 class="text-xl font-bold">${formatText("Incrível!")}</h2><p class="text-base">${formatText("Você terminou o")} <b>${formatText("Nível " + currentLevel)}</b>!</p><button id="finish-btn" class="bg-blue-600 text-white p-3 rounded-lg text-lg font-bold btn-bounce mt-1 shadow-lg">${formatText("Continuar")}</button></div>`;
             document.getElementById('finish-btn').onclick = () => setScreen('levels');
             speak("Incrível! Excelente trabalho!", "pt-BR");
         }
