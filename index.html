@@ -238,6 +238,18 @@
                         { en: "She is drawing a flower", pt: "Ela está desenhando uma flor" }
                     ],
                     "⭐ Sentences": [
+                        { en: "*Suzy is drawing", pt: "Suzy está desenhando" },
+                        { en: "*The children's parents are making dinner", pt: "Os pais das crianças estão fazendo o jantar" },
+                        { en: "*The children's uncle isn't watching TV", pt: "O tio das crianças não está assistindo TV" },
+                        { en: "*Simon and his aunt are playing tennis", pt: "Simon e sua tia estão jogando tênis" },
+                        { en: "*Stella is taking a photo", pt: "Stella está tirando uma foto" },
+                        { en: "*The children's grandparents aren't reading", pt: "Os avós das crianças não estão lendo" },
+                        { en: "*Mark wants to play guitar", pt: "Mark quer tocar violão" },
+                        { en: "*Grandma enjoys making cake", pt: "Vovó gosta de fazer bolo" },
+                        { en: "*Grandpa enjoys taking photos", pt: "Vovô gosta de tirar fotos" },
+                        { en: "*Simon wants to play basketball", pt: "Simon quer jogar basquete" },
+                        { en: "*Fred wants to ride a bike", pt: "Fred quer andar de bicicleta" },
+                        { en: "*Stella enjoys reading a book", pt: "Stella gosta de ler um livro" },
                         { en: "I've got a sister", pt: "Eu tenho uma irmã" },
                         { en: "I've got a dog", pt: "Eu tenho um cachorro" },
                         { en: "My sister is called Luna", pt: "Minha irmã se chama Luna" },
@@ -848,10 +860,17 @@
                 lvls.push({ id: 4, title: "Nível 4", sub: "🧩 Anagrama (*)" }, { id: 5, title: "Nível 5", sub: "⌨️ Escrever (*)" });
             }
             const comp = userProgress[currentTheme] || [];
-            lvls.forEach(l => {
-                const b = document.createElement('button'); b.className = `card p-4 flex flex-col items-center btn-bounce border-b-4 mb-2 ${comp.includes(l.id) ? 'border-green-400' : 'border-green-200'}`;
-                b.innerHTML = `<div class="flex items-center gap-1.5"><span class="text-lg font-bold">${l.title}</span>${comp.includes(l.id) ? '<span class="text-green-600 text-sm">✓</span>' : ''}</div><span class="text-[10px] opacity-60">${l.sub}</span>`;
-                b.onclick = () => startTheme(currentProva, currentTheme, l.id); container.appendChild(b);
+            lvls.forEach((l, idx) => {
+                const isCompleted = comp.includes(l.id);
+                // SEQUENCE UNLOCK: index 0 (L1) is always unlocked. Others check if previous index ID is in 'comp'.
+                const isLocked = idx > 0 && !comp.includes(lvls[idx - 1].id);
+                
+                const b = document.createElement('button'); 
+                b.className = `card p-4 flex flex-col items-center btn-bounce border-b-4 mb-2 ${isCompleted ? 'border-green-400' : 'border-green-200'} ${isLocked ? 'locked' : ''}`;
+                b.innerHTML = `<div class="flex items-center gap-1.5"><span class="text-lg font-bold">${l.title}</span>${isCompleted ? '<span class="text-green-600 text-sm">✓</span>' : ''}</div><span class="text-[10px] opacity-60">${l.sub}</span>`;
+                
+                if (!isLocked) b.onclick = () => startTheme(currentProva, currentTheme, l.id);
+                container.appendChild(b);
             });
         }
 
