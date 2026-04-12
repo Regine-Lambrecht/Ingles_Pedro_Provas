@@ -19,30 +19,23 @@
             transform: scale(0.95);
         }
         .correct {
-            background-color: #48bb78 !important;
-            color: white !important;
-            border-color: #2f855a !important;
+            background-color: #dcfce7 !important;
+            color: #14532d !important;
+            border-color: #166534 !important;
         }
         .wrong {
-            background-color: #f56565 !important;
-            color: white !important;
-            border-color: #c53030 !important;
+            background-color: #fee2e2 !important;
+            color: #b91c1c !important;
+            border-color: #ef4444 !important;
         }
         .highlight {
-            border: 3px solid #48bb78 !important;
-            animation: pulse 1.5s infinite;
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.01); }
-            100% { transform: scale(1); }
+            border: 4px solid #166534 !important;
         }
         .card {
             background: white;
             border-radius: 12px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        /* Special class for inverted questions */
         .card-inverted {
             background: #000000 !important;
             color: #ffffff !important;
@@ -67,15 +60,13 @@
             opacity: 0; 
             transition: opacity 0.3s ease;
         }
-        .revealed-single .option-text-sub {
-            opacity: 0.85;
-        }
-        .reveal-all .option-text-sub {
+        .revealed-single .option-text-sub, .reveal-all .option-text-sub {
             opacity: 0.85;
         }
         .toggle-active {
             background-color: #3182ce !important;
             color: white !important;
+            border-color: #2b6cb0 !important;
         }
         .vocab-table {
             width: 100%;
@@ -91,6 +82,7 @@
             border-top: 1px solid #e2e8f0;
             border-bottom: 1px solid #e2e8f0;
             font-size: 0.85rem;
+            vertical-align: middle;
         }
         .vocab-table td:first-child {
             border-left: 1px solid #e2e8f0;
@@ -103,6 +95,70 @@
         }
         .key-term {
             color: #e53e3e !important; 
+        }
+        .letter-tile {
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border: 2px solid #cbd5e0;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            user-select: none;
+        }
+        .letter-slot {
+            width: 30px;
+            height: 34px;
+            border-bottom: 3px solid #2d3748;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin: 0 2px;
+            background: rgba(255,255,255,0.5);
+            transition: all 0.2s ease;
+            border-radius: 4px 4px 0 0;
+        }
+        .letter-slot.filled {
+            border-bottom-color: #3182ce;
+            background: white;
+        }
+        .letter-slot.forced, .forced-field {
+            background-color: #dcfce7 !important;
+            border: 2px solid #166534 !important;
+            color: #14532d !important;
+            border-radius: 6px;
+        }
+        .hint-active {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        @keyframes blink-red-full {
+            0%, 100% { background-color: transparent; border-color: transparent; }
+            50% { background-color: #fee2e2; border: 2px solid #ef4444; color: #b91c1c; }
+        }
+        @keyframes blink-green-full {
+            0%, 100% { background-color: transparent; border-color: transparent; }
+            50% { background-color: #dcfce7; border: 2px solid #166534; color: #14532d; }
+        }
+        .blinking-error {
+            animation: blink-red-full 0.4s ease-in-out 2;
+            background-color: #fee2e2 !important;
+            border: 2px solid #ef4444 !important;
+            color: #b91c1c !important;
+            border-radius: 6px;
+        }
+        .blinking-forced {
+            animation: blink-green-full 0.4s ease-in-out 2;
+            background-color: #dcfce7 !important;
+            border: 2px solid #166534 !important;
+            color: #14532d !important;
+            border-radius: 6px;
         }
     </style>
 </head>
@@ -143,7 +199,10 @@
                         { en: "*Ten", pt: "10" }, { en: "*Eleven", pt: "11" }, { en: "*Twelve", pt: "12" },
                         { en: "*Thirteen", pt: "13" }, { en: "*Fourteen", pt: "14" }, { en: "*Fifteen", pt: "15" },
                         { en: "*Sixteen", pt: "16" }, { en: "*Seventeen", pt: "17" }, { en: "*Eighteen", pt: "18" },
-                        { en: "*Nineteen", pt: "19" }, { en: "*Twenty", pt: "20" }
+                        { en: "*Nineteen", pt: "19" }, { en: "*Twenty", pt: "20" }, { en: "*Thirty", pt: "30" },
+                        { en: "*Forty", pt: "40" }, { en: "*Fifty", pt: "50" }, { en: "*Sixty", pt: "60" },
+                        { en: "*Seventy", pt: "70" }, { en: "*Eighty", pt: "80" }, { en: "*Ninety", pt: "90" },
+                        { en: "*One hundred", pt: "100" }
                     ],
                     "⭐ Adjectives": [
                         { en: "Favourite", pt: "Favorito" }, { en: "Big", pt: "Grande" },
@@ -151,14 +210,15 @@
                         { en: "Fat", pt: "Gordo" }, { en: "New", pt: "Novo" },
                         { en: "Happy", pt: "Feliz" }, { en: "*Quiet", pt: "Quieto" },
                         { en: "*Clever", pt: "Esperto" }, { en: "Beautiful", pt: "Bonito" },
-                        { en: "*Straight", pt: "Liso" }, { en: "Funny", pt: "Engraçado" },
+                        { en: "*Straight", pt: "Liso" }, { en: "*Funny", pt: "Engraçado" },
                         { en: "*Curly", pt: "Cacheado" }, { en: "*Naughty", pt: "Malcriado" },
                         { en: "Dirty", pt: "Sujo" }, { en: "*Fair", pt: "Loiro" },
                         { en: "*Purple", pt: "Roxo" }, { en: "*Pink", pt: "Rosa" },
                         { en: "*Green", pt: "Verde" }, { en: "*Black", pt: "Preto" },
                         { en: "*White", pt: "Branco" }, { en: "*Blue", pt: "Azul" },
                         { en: "*Grey", pt: "Cinza" }, { en: "*Orange", pt: "Laranja" },
-                        { en: "*Red", pt: "Vermelho" }, { en: "*Yellow", pt: "Amarelo" }
+                        { en: "*Red", pt: "Vermelho" }, { en: "*Yellow", pt: "Amarelo" },
+                        { en: "*Smart", pt: "Esperto" }
                     ],
                     "⭐ Present Continuous": [
                         { en: "My mother is reading", pt: "Minha mãe está lendo" },
@@ -205,7 +265,7 @@
                         { en: "*Who are Susy's parents?", pt: "Quem são os pais da Susy?" },
                         { en: "How many toys have you got?", pt: "Quantos brinquedos você tem?" },
                         { en: "She is with her mother", pt: "Ela está com a mãe dela" },
-                        { en: "*I love flying my kite", pt: "Eu amo soltar minha pipa" },
+                        { en: "*I love flying my kite", pt: "Eu amo soltar pipa" },
                         { en: "*I like playing football", pt: "Eu gosto de jogar futebol" },
                         { en: "I need a towel", pt: "Eu preciso de uma toalha" },
                         { en: "*Suzy wants to wash her dog", pt: "Suzy quer lavar o cachorro dela" },
@@ -232,24 +292,27 @@
                         { en: "Dog", pt: "Cachorro" }, { en: "Spider", pt: "Aranha" },
                         { en: "Cat", pt: "Gato" }
                     ],
-                    "Verbs": [
-                        { en: "Listen", pt: "Ouvir" }, { en: "Read", pt: "Ler" },
-                        { en: "Ask", pt: "Perguntar" }, { en: "Answer", pt: "Responder" },
-                        { en: "Write", pt: "Escrever" }, { en: "Talk", pt: "Falar" },
+                    "⭐ Verbs": [
+                        { en: "*Listen", pt: "Ouvir" }, { en: "*Read", pt: "Ler" },
+                        { en: "Ask", pt: "Perguntar" }, { en: "*Answer", pt: "Responder" },
+                        { en: "*Write", pt: "Escrever" }, { en: "Talk", pt: "Falar" },
                         { en: "Sit", pt: "Sentar" }, { en: "Drink", pt: "Beber" },
                         { en: "Do", pt: "Fazer" }, { en: "Eat", pt: "Comer" },
                         { en: "Kick", pt: "Chutar" }, { en: "Drive", pt: "Dirigir" },
                         { en: "Walk", pt: "Andar" }, { en: "Hold", pt: "Segurar" },
-                        { en: "Find", pt: "Encontrar" }, { en: "Draw", pt: "Desenhar" },
+                        { en: "Find", pt: "Encontrar" }, { en: "*Draw", pt: "Desenhar" },
                         { en: "Ride", pt: "Andar de" }, { en: "Fly", pt: "Voar" },
-                        { en: "Play", pt: "Brincar" }, { en: "Paint", pt: "Pintar" },
-                        { en: "Swim", pt: "Nadar" }, { en: "Sing", pt: "Cantar" },
+                        { en: "*Play", pt: "Jogar" }, { en: "Paint", pt: "Pintar" },
+                        { en: "Swim", pt: "Nadar" }, { en: "*Sing", pt: "Cantar" },
                         { en: "Jump", pt: "Pular" }, { en: "Can", pt: "Poder" },
                         { en: "Help", pt: "Ajudar" }, { en: "Have", pt: "Ter" },
                         { en: "Like", pt: "Gostar" }, { en: "Have a bath", pt: "Tomar banho" },
                         { en: "Love", pt: "Amar" }, { en: "Bounce", pt: "Quicar" },
                         { en: "Wash", pt: "Lavar" }, { en: "Laugh", pt: "Rir" },
-                        { en: "Underline", pt: "Sublinhar" }, { en: "Take a photo", pt: "Tirar uma foto" }
+                        { en: "*Underline", pt: "Sublinhar" }, { en: "Take a photo", pt: "Tirar uma foto" },
+                        { en: "*Circle", pt: "Circular" }, { en: "*Match", pt: "Ligar" },
+                        { en: "*Look", pt: "Olhar" }, { en: "*Sleep", pt: "Dormir" },
+                        { en: "*Make", pt: "Fazer" }, { en: "*Take", pt: "Pegar" }
                     ],
                     "Clothes": [
                         { en: "Hat", pt: "Chapéu" }, { en: "Jacket", pt: "Jaqueta" }
@@ -258,23 +321,25 @@
                         { en: "Doctor", pt: "Médico" }, { en: "Farmer", pt: "Fazendeiro" }
                     ],
                     "Other": [
-                        { en: "Table", pt: "Mesa" }, { en: "Book", pt: "Livro" },
-                        { en: "Box", pt: "Caixa" }, { en: "Ball", pt: "Bola" },
+                        { en: "Table", pt: "Mesa" }, { en: "*Book", pt: "Livro" },
+                        { en: "Box", pt: "Caixa" }, { en: "*Ball", pt: "Bola" },
                         { en: "Floor", pt: "Chão" }, { en: "*Train", pt: "Trem" },
                         { en: "*Bike", pt: "Bicicleta" }, { en: "*Game", pt: "Jogo" },
                         { en: "*Computer", pt: "Computador" }, { en: "*Toy", pt: "Brinquedo" },
                         { en: "*Hello", pt: "Olá" }, { en: "Hi", pt: "Oi" },
-                        { en: "Cake", pt: "Bolo" }, { en: "*Kite", pt: "Pipa" },
-                        { en: "Sorry", pt: "Desculpe" }, { en: "Phone", pt: "Telefone" },
+                        { en: "*Cake", pt: "Bolo" }, { en: "*Kite", pt: "Pipa" },
+                        { en: "Sorry", pt: "Desculpe" }, { en: "*Phone", pt: "Telefone" },
                         { en: "Please", pt: "Por favor" }, { en: "House", pt: "Casa" },
                         { en: "Tail", pt: "Cauda" }, { en: "Towel", pt: "Toalha" },
-                        { en: "Picture", pt: "Quadro" }, { en: "*Doll", pt: "Boneca" },
-                        { en: "*Helmet", pt: "Capacete" }, { en: "Burger", pt: "Hambúrguer" },
+                        { en: "*Picture", pt: "Quadro" }, { en: "*Doll", pt: "Boneca" },
+                        { en: "*Helmet", pt: "Capacete" }, { en: "*Burger", pt: "Hambúrguer" },
                         { en: "Flower", pt: "Flor" }, { en: "*Robot", pt: "Robô" },
                         { en: "School", pt: "Escola" }, { en: "*Camera", pt: "Câmera" },
                         { en: "*Helicopter", pt: "Helicóptero" }, { en: "*Monster", pt: "Monstro" },
-                        { en: "*Lorry", pt: "Carrinho" }, { en: "Boat", pt: "Barco" },
-                        { en: "Airplane", pt: "Avião" }, { en: "Bus", pt: "Ônibus" }
+                        { en: "*Lorry", pt: "Carrinho" }, { en: "*Boat", pt: "Barco" },
+                        { en: "*Airplane", pt: "Avião" }, { en: "*Bus", pt: "Ônibus" },
+                        { en: "*Fish", pt: "Peixe" }, { en: "*Carrot", pt: "Cenoura" },
+                        { en: "*Dinner", pt: "Jantar" }, { en: "*Radio", pt: "Rádio" }
                     ],
                 }
             },
@@ -286,8 +351,8 @@
         let currentProva = null;
         let currentTheme = null;
         let currentLevel = null;
-        let questionList = [];
-        let wrongAnswers = [];
+        let questionList = []; 
+        let redoList = []; 
         let currentIndex = 0;
         let isReviewing = false;
         let showNextButton = false;
@@ -296,14 +361,52 @@
         let finishedCurrentQuestion = false;
         let vocabOnlyStars = false; 
 
+        let perfectSolvesInPhase = 0; 
+        let totalStarWords = 0;
+
+        let anagramPool = [];
+        let anagramProgress = "";
+        let wrongAttemptsPerPos = 0;
+        let isHintLocked = false;
+        let showVisualHint = false;
+        let writingPhase = 1; 
+
+        let isAnimatingError = false;
+        let isAnimatingForced = false;
+        let charToBlink = "";
+        let forcedIndices = []; 
+        let logicFeedback = ""; 
+        let logicFeedbackPt = "";
+
+        let vocabHiddenCol = 'none'; 
+        let vocabRevealedIndices = new Set();
+
         let userProgress = JSON.parse(localStorage.getItem('english_quest_progress')) || {};
         let isAllCaps = localStorage.getItem('english_quest_caps') === 'true';
+        let globalOnlyAsterisk = localStorage.getItem('english_quest_only_star') === 'true';
 
         const container = document.getElementById('main-container');
         const screenTitle = document.getElementById('screen-title');
         const backBtn = document.getElementById('back-btn');
         const feedback = document.getElementById('feedback');
         const feedbackText = document.getElementById('feedback-text');
+
+        let ptVoice = null;
+        function loadVoices() {
+            const voices = window.speechSynthesis.getVoices();
+            ptVoice = voices.find(v => v.lang === 'pt-BR' && v.name.includes('Google')) ||
+                      voices.find(v => v.lang === 'pt-BR' && v.name.includes('Maria')) ||
+                      voices.find(v => v.lang === 'pt-BR') ||
+                      voices.find(v => v.lang.startsWith('pt'));
+        }
+        window.speechSynthesis.onvoiceschanged = loadVoices;
+        loadVoices();
+
+        const ICONS = {
+            eye: `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>`,
+            eyeOff: `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a10.014 10.014 0 012.183-3.883m3.66-3.66A10.001 10.001 0 0112 5c4.478 0 8.268 2.943 9.542 7a10.059 10.059 0 01-4.125 4.875M3 3l18 18M9.88 9.88a3 3 0 104.24 4.24" /></svg>`,
+            sound: `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>`
+        };
 
         function formatText(text) {
             return isAllCaps ? String(text).toUpperCase() : String(text);
@@ -319,17 +422,20 @@
         function speak(text, lang = 'en-US', onComplete = null) {
             const speechText = String(text).replace(/^\*/, '');
             const utterance = new SpeechSynthesisUtterance(speechText);
+            if (lang.startsWith('pt') && ptVoice) utterance.voice = ptVoice;
             utterance.lang = lang; 
-            utterance.rate = 0.8; 
-            if (onComplete) {
-                utterance.onend = onComplete;
-            }
+            utterance.rate = 0.85; 
+            if (onComplete) utterance.onend = onComplete;
             window.speechSynthesis.speak(utterance);
         }
 
         function setScreen(screen) {
             currentScreen = screen;
-            if (screen !== 'vocabulary') vocabOnlyStars = false;
+            if (screen === 'vocabulary') {
+                vocabOnlyStars = globalOnlyAsterisk;
+                vocabHiddenCol = 'none';
+                vocabRevealedIndices.clear();
+            }
             render();
         }
 
@@ -344,13 +450,20 @@
             currentProva = prova;
             currentTheme = theme;
             currentLevel = level;
-            questionList = [...PROVAS[prova].themes[theme]];
+            writingPhase = 1;
+            perfectSolvesInPhase = 0;
+            redoList = [];
+            
+            let pool = [...PROVAS[prova].themes[theme]];
+            if (globalOnlyAsterisk || level >= 4) pool = pool.filter(w => w.en.startsWith('*'));
+            
+            questionList = pool;
             shuffle(questionList);
-            wrongAnswers = [];
+            
+            totalStarWords = questionList.length;
             currentIndex = 0;
             isReviewing = false;
-            resetQuestionState();
-            setScreen('game');
+            setScreen('game'); 
             playQuestion();
         }
 
@@ -359,42 +472,60 @@
             attemptCount = 0;
             selectedWrongIndices = [];
             finishedCurrentQuestion = false;
-            window._currentOpts = null; 
+            window._currentOpts = null;
             window._currentId = null;
-            window._suggestionsRevealed = false; 
+            anagramProgress = "";
+            wrongAttemptsPerPos = 0;
+            anagramPool = [];
+            isHintLocked = false;
+            showVisualHint = false;
+            isAnimatingError = false;
+            isAnimatingForced = false;
+            charToBlink = "";
+            forcedIndices = [];
+            logicFeedback = "";
+            logicFeedbackPt = "";
         }
 
         function playQuestion() {
             resetQuestionState();
             const current = questionList[currentIndex];
-            if (currentLevel === 1) speak(current.en);
-            else if (currentLevel === 2) speak(current.pt, 'pt-BR');
-            else if (currentLevel === 3) speak(current.en);
+            if (!current) return;
+
+            if (currentLevel === 4 || currentLevel === 5) {
+                const cleanWord = current.en.replace(/^\*/, '');
+                anagramPool = cleanWord.split('');
+                shuffle(anagramPool);
+            }
+
+            let pText = (currentLevel === 2 || currentLevel >= 4) ? current.pt : current.en;
+            if (current.en.startsWith('*') && !pText.startsWith('*')) pText = '*' + pText;
+            speak(pText, (currentLevel === 2 || currentLevel >= 4) ? 'pt-BR' : 'en-US');
+            
             render();
         }
 
         function checkAnswer(selectedObj, correctObj, btnIndex) {
             if (finishedCurrentQuestion) return; 
-            const isCorrect = selectedObj.en === correctObj.en;
+            const isCorrect = (selectedObj.en === correctObj.en);
             attemptCount++;
             
             if (isCorrect) {
                 finishedCurrentQuestion = true;
-                showFeedback(formatText('Muito bem! 🌟'), '#48bb78');
-                speak("Well done"); 
-                triggerFinalReview(correctObj, true); 
+                if (attemptCount === 1) perfectSolvesInPhase++;
+                showFeedback(formatText('Incrível! 🌟'), '#48bb78');
+                speak("Well done");
+                triggerFinalReview(correctObj, true);
             } else {
                 selectedWrongIndices.push(btnIndex);
-                const current = questionList[currentIndex];
-                if (!wrongAnswers.some(q => q.en === current.en)) {
-                    wrongAnswers.push(current);
-                }
+                const currentItem = questionList[currentIndex];
                 if (attemptCount === 1) {
                     showFeedback(formatText('Tente outra vez!'), '#f56565');
                     speak("Try again"); 
                     render();
                 } else {
                     finishedCurrentQuestion = true;
+                    redoList.push(currentItem);
                     showFeedback(formatText('Vamos ver a correta!'), '#f56565');
                     speak("Let's see the correct one"); 
                     triggerFinalReview(correctObj, false); 
@@ -402,19 +533,112 @@
             }
         }
 
+        function handleAnagramClick(char, index) {
+            if (finishedCurrentQuestion || isHintLocked || isAnimatingError || isAnimatingForced) return;
+            const current = questionList[currentIndex];
+            const cleanTarget = current.en.replace(/^\*/, '').toLowerCase();
+            if (char.toLowerCase() === cleanTarget[anagramProgress.length]) {
+                anagramProgress += cleanTarget[anagramProgress.length];
+                anagramPool.splice(index, 1);
+                wrongAttemptsPerPos = 0;
+                checkLevelComplete();
+                render(); 
+            } else {
+                wrongAttemptsPerPos++;
+                if (wrongAttemptsPerPos >= 2) {
+                    forcedIndices.push(anagramProgress.length);
+                    anagramProgress += cleanTarget[anagramProgress.length];
+                    const pIdx = anagramPool.findIndex(c => c.toLowerCase() === cleanTarget[anagramProgress.length-1]);
+                    if (pIdx !== -1) anagramPool.splice(pIdx, 1);
+                    wrongAttemptsPerPos = 0;
+                    checkLevelComplete();
+                    render();
+                } else {
+                    showFeedback(formatText("Tente outra vez!"), "#f56565");
+                }
+            }
+        }
+
+        function handleTyping(e) {
+            if (finishedCurrentQuestion || isHintLocked || isAnimatingError || isAnimatingForced) return;
+            const input = e.target.value.toLowerCase();
+            const current = questionList[currentIndex];
+            const cleanTarget = current.en.replace(/^\*/, '').toLowerCase();
+            
+            if (input.length > anagramProgress.length) {
+                const typedChar = input[input.length - 1];
+                const requiredChar = cleanTarget[anagramProgress.length];
+                if (typedChar === requiredChar) {
+                    anagramProgress += requiredChar;
+                    wrongAttemptsPerPos = 0;
+                    if (writingPhase === 1 && anagramProgress === cleanTarget) checkLevelComplete();
+                    render();
+                } else {
+                    wrongAttemptsPerPos++;
+                    charToBlink = typedChar;
+                    isAnimatingError = true;
+                    render();
+                    setTimeout(() => {
+                        isAnimatingError = false;
+                        charToBlink = "";
+                        if (wrongAttemptsPerPos >= 2) {
+                            charToBlink = requiredChar;
+                            isAnimatingForced = true;
+                            render();
+                            setTimeout(() => {
+                                isAnimatingForced = false;
+                                forcedIndices.push(anagramProgress.length);
+                                anagramProgress += requiredChar;
+                                wrongAttemptsPerPos = 0;
+                                charToBlink = "";
+                                if (writingPhase === 1 && anagramProgress === cleanTarget) checkLevelComplete();
+                                render();
+                                const el = document.getElementById('hidden-typing-input') || document.getElementById('big-field-input');
+                                if (el) el.focus();
+                            }, 800);
+                        } else {
+                            render();
+                            const el = document.getElementById('hidden-typing-input') || document.getElementById('big-field-input');
+                            if (el) el.focus();
+                        }
+                    }, 800);
+                }
+            }
+        }
+
+        function checkLevelComplete() {
+            const current = questionList[currentIndex];
+            const cleanTarget = (currentLevel === 5 || currentLevel === 4) 
+                ? current.en.replace(/^\*/, '').toLowerCase() 
+                : "";
+            if (anagramProgress === cleanTarget) {
+                finishedCurrentQuestion = true;
+                speak(current.en); 
+                if (forcedIndices.length > 0) {
+                    showFeedback(formatText("Muito bem!"), "#48bb78");
+                    redoList.push(current);
+                } else {
+                    showFeedback(formatText("Incrível! 🌟"), "#48bb78");
+                    perfectSolvesInPhase++;
+                }
+                setTimeout(() => { showNextButton = true; render(); }, 1000);
+            } else if (currentLevel === 5) {
+                showFeedback(formatText("Ainda não terminou!"), "#f56565");
+            }
+        }
+
         function triggerFinalReview(correctObj, wasCorrect) {
             render(); 
             setTimeout(() => {
-                const first = currentLevel === 2 ? { text: correctObj.pt, lang: 'pt-BR' } : { text: correctObj.en, lang: 'en-US' };
-                const second = currentLevel === 2 ? { text: correctObj.en, lang: 'en-US' } : { text: correctObj.pt, lang: 'pt-BR' };
-                speak(first.text, first.lang, () => {
+                const f = currentLevel === 2 ? { text: correctObj.pt, lang: 'pt-BR' } : { text: correctObj.en, lang: 'en-US' };
+                const s = currentLevel === 2 ? { text: correctObj.en, lang: 'en-US' } : { text: correctObj.pt, lang: 'pt-BR' };
+                speak(f.text, f.lang, () => {
                     setTimeout(() => {
-                        speak(second.text, second.lang, () => {
-                            const delay = wasCorrect ? 1000 : 2500;
-                            setTimeout(() => {
-                                showNextButton = true;
+                        speak(s.text, s.lang, () => {
+                            setTimeout(() => { 
+                                showNextButton = true; 
                                 render(); 
-                            }, delay);
+                            }, 2000);
                         });
                     }, 300);
                 });
@@ -424,19 +648,47 @@
         function nextQuestion() {
             currentIndex++;
             if (currentIndex >= questionList.length) {
-                if (wrongAnswers.length > 0) {
-                    questionList = [...wrongAnswers];
-                    wrongAnswers = [];
+                if (redoList.length > 0) {
+                    questionList = [...redoList];
+                    redoList = [];
                     currentIndex = 0;
-                    isReviewing = true;
+                    shuffle(questionList);
                     playQuestion();
                 } else {
-                    saveProgress();
-                    setScreen('finish');
+                    if (currentLevel === 5 && writingPhase === 1) {
+                        writingPhase = 2;
+                        questionList = [...PROVAS[currentProva].themes[currentTheme]].filter(w => w.en.startsWith('*'));
+                        currentIndex = 0;
+                        shuffle(questionList);
+                        playQuestion();
+                    } else {
+                        saveProgress();
+                        setScreen('finish');
+                    }
                 }
             } else {
                 playQuestion();
             }
+        }
+
+        function triggerSeeHint() {
+            if (isHintLocked || finishedCurrentQuestion) return;
+            isHintLocked = true; showVisualHint = true; render();
+            setTimeout(() => {
+                showVisualHint = false; isHintLocked = false; render();
+                const el = document.getElementById('hidden-typing-input') || document.getElementById('big-field-input');
+                if (el) el.focus();
+            }, 2000);
+        }
+
+        function triggerHearHint(word) {
+            if (isHintLocked || finishedCurrentQuestion) return;
+            isHintLocked = true; render();
+            speak(word, 'en-US', () => {
+                isHintLocked = false; render();
+                const el = document.getElementById('hidden-typing-input') || document.getElementById('big-field-input');
+                if (el) el.focus();
+            });
         }
 
         function saveProgress() {
@@ -449,13 +701,13 @@
 
         function getOptions(correct, allPool) {
             if (window._currentOpts && window._currentId === currentIndex) return window._currentOpts;
+            let pool = globalOnlyAsterisk ? allPool.filter(p => p.en.startsWith('*')) : allPool;
             let opts = [correct];
-            let pool = allPool.filter(p => p.en !== correct.en);
-            shuffle(pool);
-            opts.push(...pool.slice(0, 2));
+            let detractors = pool.filter(p => p.en !== correct.en);
+            shuffle(detractors);
+            opts.push(...detractors.slice(0, 2));
             shuffle(opts);
-            window._currentOpts = opts;
-            window._currentId = currentIndex;
+            window._currentOpts = opts; window._currentId = currentIndex;
             return opts;
         }
 
@@ -464,261 +716,243 @@
             feedback.querySelector('div').style.borderColor = color;
             feedbackText.style.color = color;
             feedback.classList.remove('opacity-0');
-            setTimeout(() => {
-                feedback.classList.add('opacity-0');
-            }, 1000);
+            setTimeout(() => feedback.classList.add('opacity-0'), 1000);
         }
 
         function renderHome() {
-            container.innerHTML = '';
-            screenTitle.innerText = "Meus Estudos";
-            const toggleContainer = document.createElement('div');
-            toggleContainer.className = "flex justify-center mb-2";
-            const capsBtn = document.createElement('button');
-            capsBtn.className = `p-2 rounded-lg font-bold border-2 border-blue-600 transition-all btn-bounce text-xs ${isAllCaps ? 'toggle-active' : 'bg-white text-blue-600'}`;
-            capsBtn.innerText = isAllCaps ? "MAIÚSCULAS: ATIVADO" : "Maiúsculas: Desativado";
-            capsBtn.onclick = () => {
-                isAllCaps = !isAllCaps;
-                localStorage.setItem('english_quest_caps', isAllCaps);
-                render();
-            };
-            toggleContainer.appendChild(capsBtn);
-            container.appendChild(toggleContainer);
-
-            Object.keys(PROVAS).forEach(prova => {
-                const btn = document.createElement('button');
-                btn.className = "card p-4 text-xl font-bold btn-bounce bg-white border-b-4 border-blue-200 active:border-b-0 mb-2";
-                btn.innerText = prova;
-                btn.onclick = () => { currentProva = prova; setScreen('themes'); };
-                container.appendChild(btn);
+            container.innerHTML = ''; screenTitle.innerText = formatText("Vamos estudar inglês - 4");
+            const homeHeader = document.createElement('div');
+            homeHeader.className = "flex justify-end mb-4 w-full";
+            const cb = document.createElement('button');
+            cb.className = `p-2.5 rounded-xl font-bold border-2 transition-all btn-bounce text-xs ${isAllCaps ? 'toggle-active' : 'bg-white border-gray-300 text-gray-500'}`;
+            cb.innerText = formatText("Apenas maiúsculas");
+            cb.onclick = () => { isAllCaps = !isAllCaps; localStorage.setItem('english_quest_caps', isAllCaps); render(); };
+            homeHeader.appendChild(cb); 
+            container.appendChild(homeHeader);
+            Object.keys(PROVAS).forEach(p => {
+                const b = document.createElement('button');
+                b.className = "card p-4 text-xl font-bold btn-bounce bg-white border-b-4 border-blue-200 mb-2";
+                b.innerText = formatText("Prova " + p); 
+                b.onclick = () => { currentProva = p; setScreen('themes'); };
+                container.appendChild(b);
             });
         }
 
         function renderThemes() {
-            container.innerHTML = '';
-            screenTitle.innerText = `Temas de ${currentProva}`;
-            Object.keys(PROVAS[currentProva].themes).forEach(theme => {
-                const themeData = PROVAS[currentProva].themes[theme];
-                const completedCount = (userProgress[theme] || []).length;
-                
-                const themeCard = document.createElement('div');
-                themeCard.className = "card p-2.5 flex justify-between items-center border-b-4 border-yellow-200 cursor-pointer transition-all hover:bg-gray-50 active:scale-95 mb-1.5";
-                themeCard.onclick = () => { currentTheme = theme; setScreen('levels'); };
-                
-                const leftArea = document.createElement('div');
-                leftArea.className = "flex flex-col items-start text-left";
-                leftArea.innerHTML = `
-                    <span class="text-base font-bold">${theme}</span>
-                    <span class="text-[10px] opacity-60">${completedCount}/3 feitos</span>
-                `;
-                
-                const rightArea = document.createElement('div');
-                rightArea.className = "flex flex-col items-end gap-1";
-                
-                const topIcons = document.createElement('div');
-                topIcons.className = "flex items-center gap-1";
-                if (completedCount === 3) topIcons.innerHTML += '<span class="text-xs">✅</span>';
-
-                const vocabBtn = document.createElement('button');
-                vocabBtn.className = "text-[9px] font-bold text-blue-600 bg-blue-50 py-0.5 px-1.5 rounded-md border border-blue-100 hover:bg-blue-100 transition-colors";
-                vocabBtn.innerText = formatText(`📖 ${themeData.length}`);
-                vocabBtn.onclick = (e) => {
-                    e.stopPropagation();
-                    currentTheme = theme;
-                    setScreen('vocabulary');
-                };
-
-                rightArea.appendChild(topIcons);
-                rightArea.appendChild(vocabBtn);
-                themeCard.appendChild(leftArea);
-                themeCard.appendChild(rightArea);
-                container.appendChild(themeCard);
+            container.innerHTML = ''; screenTitle.innerText = formatText(`Temas de ${currentProva}`);
+            const filterContainer = document.createElement('div');
+            filterContainer.className = "flex gap-0 mb-4 rounded-xl overflow-hidden border-2 border-blue-400";
+            const btnTodos = document.createElement('button');
+            btnTodos.className = `flex-1 py-3 font-bold text-xs transition-all ${!globalOnlyAsterisk ? 'toggle-active' : 'bg-white text-blue-500'}`;
+            btnTodos.innerText = formatText("Todos os termos");
+            btnTodos.onclick = () => { globalOnlyAsterisk = false; localStorage.setItem('english_quest_only_star', false); renderThemes(); };
+            const btnPrincipais = document.createElement('button');
+            btnPrincipais.className = `flex-1 py-3 font-bold text-xs transition-all ${globalOnlyAsterisk ? 'toggle-active' : 'bg-white text-blue-500'}`;
+            btnPrincipais.innerText = formatText("Apenas termos principais");
+            btnPrincipais.onclick = () => { globalOnlyAsterisk = true; localStorage.setItem('english_quest_only_star', true); renderThemes(); };
+            filterContainer.appendChild(btnTodos); filterContainer.appendChild(btnPrincipais); container.appendChild(filterContainer);
+            
+            const strictOrder = ["⭐ Family", "⭐ Numbers", "⭐ Adjectives", "Body", "⭐ Verbs", "Other", "⭐ Present Continuous", "⭐ Sentences"];
+            const tData = Object.keys(PROVAS[currentProva].themes).map(n => ({ 
+                name: n, 
+                hasAsterisk: PROVAS[currentProva].themes[n].some(i => i.en.startsWith('*')), 
+                count: (userProgress[n] || []).length 
+            }));
+            tData.sort((a,b) => {
+                let ia = strictOrder.indexOf(a.name); let ib = strictOrder.indexOf(b.name);
+                return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
+            });
+            tData.forEach(t => {
+                const themeList = PROVAS[currentProva].themes[t.name];
+                const countToDisplay = globalOnlyAsterisk ? themeList.filter(i => i.en.startsWith('*')).length : themeList.length;
+                const disp = t.hasAsterisk && !t.name.startsWith('⭐') ? `⭐ ${t.name}` : t.name;
+                const tc = document.createElement('div');
+                tc.className = "card p-2.5 flex justify-between items-center border-b-4 border-yellow-200 cursor-pointer mb-1.5 active:scale-95";
+                tc.onclick = () => { currentTheme = t.name; setScreen('levels'); };
+                tc.innerHTML = `<div class="flex flex-col"><span class="text-base font-bold">${disp}</span><span class="text-[10px] opacity-60">${t.count} feitos</span></div>`;
+                const rb = document.createElement('button');
+                rb.className = "text-[9px] font-bold text-blue-600 bg-blue-50 py-0.5 px-1.5 rounded-md border border-blue-100";
+                rb.innerText = formatText(`📖 ${countToDisplay}`);
+                rb.onclick = (e) => { e.stopPropagation(); currentTheme = t.name; setScreen('vocabulary'); };
+                tc.appendChild(rb); container.appendChild(tc);
             });
         }
 
         function renderVocabulary() {
-            container.innerHTML = ''; 
-            screenTitle.innerText = formatText(`Lista: ${currentTheme}`);
-            let words = [...PROVAS[currentProva].themes[currentTheme]];
-            
-            words.sort((a, b) => a.en.replace(/^\*/, '').localeCompare(b.en.replace(/^\*/, '')));
-
-            if (vocabOnlyStars) {
-                words = words.filter(w => w.en.startsWith('*'));
-            }
-
-            const filterBtn = document.createElement('button');
-            filterBtn.className = `w-full p-2 mb-2 rounded-lg font-bold border-2 transition-all btn-bounce text-xs ${vocabOnlyStars ? 'bg-yellow-400 border-yellow-500 text-yellow-900' : 'bg-white border-blue-600 text-blue-600'}`;
-            filterBtn.innerText = vocabOnlyStars ? formatText("* Mostrando Principais") : formatText("Mostrar apenas Principais (*)");
-            filterBtn.onclick = () => {
-                vocabOnlyStars = !vocabOnlyStars;
-                renderVocabulary();
+            container.innerHTML = ''; screenTitle.innerText = formatText(`Lista: ${currentTheme}`);
+            const filterContainer = document.createElement('div');
+            filterContainer.className = "flex gap-0 mb-3 rounded-xl overflow-hidden border-2 border-blue-400";
+            const btnTodos = document.createElement('button');
+            btnTodos.className = `flex-1 py-2 font-bold text-xs transition-all ${!vocabOnlyStars ? 'toggle-active' : 'bg-white text-blue-500'}`;
+            btnTodos.innerText = formatText("Todos os termos");
+            btnTodos.onclick = () => { 
+                vocabOnlyStars = false; globalOnlyAsterisk = false; localStorage.setItem('english_quest_only_star', false); renderVocabulary(); 
             };
-            container.appendChild(filterBtn);
+            const btnPrincipais = document.createElement('button');
+            btnPrincipais.className = `flex-1 py-2 font-bold text-xs transition-all ${vocabOnlyStars ? 'toggle-active' : 'bg-white text-blue-500'}`;
+            btnPrincipais.innerText = formatText("Apenas termos principais");
+            btnPrincipais.onclick = () => { 
+                vocabOnlyStars = true; globalOnlyAsterisk = true; localStorage.setItem('english_quest_only_star', true); renderVocabulary(); 
+            };
+            filterContainer.appendChild(btnTodos); filterContainer.appendChild(btnPrincipais); container.appendChild(filterContainer);
 
-            const tableWrap = document.createElement('div');
-            tableWrap.className = "overflow-y-auto max-h-[65vh] px-1";
-            
-            if (words.length === 0) {
-                const empty = document.createElement('div');
-                empty.className = "p-4 text-center opacity-50 font-bold text-xs";
-                empty.innerText = formatText("Nenhum principal encontrado.");
-                tableWrap.appendChild(empty);
-            } else {
-                const table = document.createElement('table');
-                table.className = "vocab-table";
-                table.innerHTML = `
-                    <thead>
-                        <tr class="bg-transparent text-[10px] opacity-50">
-                            <th class="text-left p-1.5">English</th>
-                            <th class="text-left p-1.5">Brasil</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${words.map(w => {
-                            const isStar = w.en.startsWith('*');
-                            return `
-                                <tr class="${isStar ? 'key-term' : ''}">
-                                    <td>${formatText(w.en)}</td>
-                                    <td>${formatText(w.pt)}</td>
-                                </tr>
-                            `;
-                        }).join('')}
-                    </tbody>
-                `;
-                tableWrap.appendChild(table);
-            }
-            
-            container.appendChild(tableWrap);
+            let ws = [...PROVAS[currentProva].themes[currentTheme]].sort((a,b) => a.en.replace(/^\*/,'').localeCompare(b.en.replace(/^\*/,'')));
+            if (vocabOnlyStars) ws = ws.filter(w => w.en.startsWith('*'));
 
-            const bottomBtn = document.createElement('button');
-            bottomBtn.className = "w-full bg-blue-600 text-white p-3 rounded-lg text-base font-bold btn-bounce mt-2 shadow-lg";
-            bottomBtn.innerText = formatText("Voltar");
-            bottomBtn.onclick = () => setScreen('themes');
-            container.appendChild(bottomBtn);
+            const hr = document.createElement('div'); hr.className = "flex gap-2 mb-2";
+            const btnH = (c, l) => {
+                const isHidden = vocabHiddenCol === c;
+                const b = document.createElement('button'); b.className = `flex-1 p-2 rounded-lg font-bold text-[10px] border flex items-center justify-center gap-2 ${isHidden ? 'bg-gray-800 text-white' : 'bg-white text-gray-700 border-gray-300'}`;
+                const icon = isHidden ? ICONS.eye : ICONS.eyeOff;
+                const actionText = isHidden ? "MOSTRAR" : "ESCONDER";
+                b.innerHTML = `${formatText(actionText)} ${formatText(l)} ${icon}`;
+                b.onclick = () => { if (isHidden) vocabHiddenCol = 'none'; else vocabHiddenCol = c; vocabRevealedIndices.clear(); renderVocabulary(); };
+                return b;
+            };
+            hr.appendChild(btnH('en', "INGLÊS")); hr.appendChild(btnH('pt', "PORTUGUÊS"));
+            container.appendChild(hr);
+            const wrap = document.createElement('div'); wrap.className = "overflow-y-auto max-h-[60vh] px-1";
+            const table = document.createElement('table'); table.className = "vocab-table w-full";
+            const tbody = document.createElement('tbody');
+            ws.forEach((w, i) => {
+                const row = document.createElement('tr'); if (w.en.startsWith('*')) row.className = 'key-term';
+                const tdEn = document.createElement('td'); tdEn.className = "w-1/2";
+                const enDiv = document.createElement('div'); enDiv.className = "flex items-center gap-1.5";
+                const hb = document.createElement('button'); hb.className = "p-1.5 bg-blue-50 text-blue-600 rounded-full shrink-0";
+                hb.innerHTML = ICONS.sound; hb.onclick = () => speak(w.en); enDiv.appendChild(hb);
+                const isEnHidden = vocabHiddenCol === 'en' && !vocabRevealedIndices.has(i);
+                const enEyeBtn = document.createElement('button'); enEyeBtn.className = "text-gray-400 p-1 shrink-0"; enEyeBtn.innerHTML = isEnHidden ? ICONS.eye : ICONS.eyeOff;
+                enEyeBtn.onclick = () => { if(isEnHidden) vocabRevealedIndices.add(i); else vocabRevealedIndices.delete(i); renderVocabulary(); };
+                if (vocabHiddenCol === 'en') enDiv.appendChild(enEyeBtn);
+                if (!isEnHidden) { const sp = document.createElement('span'); sp.innerText = formatText(w.en); enDiv.appendChild(sp); }
+                tdEn.appendChild(enDiv); row.appendChild(tdEn);
+                const tdPt = document.createElement('td'); tdPt.className = "w-1/2 text-right";
+                const ptDiv = document.createElement('div'); ptDiv.className = "flex items-center justify-end gap-1.5";
+                const isPtHidden = vocabHiddenCol === 'pt' && !vocabRevealedIndices.has(i);
+                const ptEyeBtn = document.createElement('button'); ptEyeBtn.className = "text-gray-400 p-1 shrink-0"; ptEyeBtn.innerHTML = isPtHidden ? ICONS.eye : ICONS.eyeOff;
+                ptEyeBtn.onclick = () => { if(isPtHidden) vocabRevealedIndices.add(i); else vocabRevealedIndices.delete(i); renderVocabulary(); };
+                if (!isPtHidden) { const spPt = document.createElement('span'); spPt.innerText = formatText(w.pt); ptDiv.appendChild(spPt); }
+                if (vocabHiddenCol === 'pt') ptDiv.appendChild(ptEyeBtn);
+                tdPt.appendChild(ptDiv); row.appendChild(tdPt); tbody.appendChild(row);
+            });
+            table.appendChild(tbody); wrap.appendChild(table); container.appendChild(wrap);
+            const bb = document.createElement('button'); bb.className = "w-full bg-blue-600 text-white p-3 rounded-lg font-bold mt-2 shadow-lg";
+            bb.innerText = formatText("Voltar"); bb.onclick = () => setScreen('themes'); container.appendChild(bb);
         }
 
         function renderLevels() {
-            container.innerHTML = '';
-            screenTitle.innerText = currentTheme;
-            const levels = [{ id: 1, title: "Nível 1", sub: "Inglês → Português" }, { id: 2, title: "Nível 2", sub: "Português → Inglês" }, { id: 3, title: "Nível 3", sub: "🎧 Só Áudio" }];
-            const completedForTheme = userProgress[currentTheme] || [];
-            levels.forEach((l, index) => {
-                const isCompleted = completedForTheme.includes(l.id);
-                const isLocked = index > 0 && !completedForTheme.includes(levels[index - 1].id);
-
-                const btn = document.createElement('button');
-                btn.className = `card p-4 flex flex-col items-center btn-bounce border-b-4 ${isCompleted ? 'border-green-400' : 'border-green-200'} ${isLocked ? 'locked' : ''} mb-2`;
-                
-                btn.innerHTML = `
-                    <div class="flex items-center gap-1.5">
-                        <span class="text-lg font-bold">${l.title}</span>
-                        ${isCompleted ? '<span class="text-green-600 text-sm">✓</span>' : ''}
-                        ${isLocked ? '<span class="text-xs">🔒</span>' : ''}
-                    </div>
-                    <span class="text-[10px] opacity-60">${l.sub}</span>
-                `;
-                
-                if (!isLocked) {
-                    btn.onclick = () => startTheme(currentProva, currentTheme, l.id);
-                }
-                container.appendChild(btn);
+            container.innerHTML = ''; screenTitle.innerText = currentTheme;
+            const lvls = [{ id: 1, title: "Nível 1", sub: "En → Pt" }, { id: 2, title: "Nível 2", sub: "Pt → En" }, { id: 3, title: "Nível 3", sub: "🎧 Só Áudio" }];
+            const starThemes = ["⭐ Family", "⭐ Numbers", "⭐ Adjectives", "⭐ Verbs"];
+            if (starThemes.includes(currentTheme)) {
+                lvls.push({ id: 4, title: "Nível 4", sub: "🧩 Anagrama (*)" }, { id: 5, title: "Nível 5", sub: "⌨️ Escrever (*)" });
+            }
+            const comp = userProgress[currentTheme] || [];
+            lvls.forEach(l => {
+                const b = document.createElement('button'); b.className = `card p-4 flex flex-col items-center btn-bounce border-b-4 mb-2 ${comp.includes(l.id) ? 'border-green-400' : 'border-green-200'}`;
+                b.innerHTML = `<div class="flex items-center gap-1.5"><span class="text-lg font-bold">${l.title}</span>${comp.includes(l.id) ? '<span class="text-green-600 text-sm">✓</span>' : ''}</div><span class="text-[10px] opacity-60">${l.sub}</span>`;
+                b.onclick = () => startTheme(currentProva, currentTheme, l.id); container.appendChild(b);
             });
         }
 
         function renderGame() {
-            container.innerHTML = '';
-            const current = questionList[currentIndex];
-            const allItems = PROVAS[currentProva].themes[currentTheme];
-            let options = getOptions(current, allItems);
+            container.innerHTML = ''; const current = questionList[currentIndex];
+            if (!current) return;
+            if (currentLevel === 5) screenTitle.innerText = `${perfectSolvesInPhase}/${totalStarWords * 2}`;
+            else if (currentLevel === 4) screenTitle.innerText = `${perfectSolvesInPhase}/${totalStarWords}`;
+            else screenTitle.innerText = isReviewing ? formatText("Revisão") : `${currentIndex + 1}/${questionList.length}`;
             
-            screenTitle.innerText = isReviewing ? formatText("Revisão") : `${currentIndex + 1}/${questionList.length}`;
-            
-            // Reverted Colors for promptCard: Black background, White text
-            const promptCard = document.createElement('div');
-            promptCard.className = "card-inverted p-4 flex flex-col items-center justify-center mb-2 min-h-[80px]";
-            
+            const pc = document.createElement('div'); pc.className = "card-inverted p-3 flex flex-col items-center justify-center mb-2 min-h-[70px]";
             if (currentLevel === 3) {
-                const playBtn = document.createElement('button');
-                playBtn.className = "text-3xl p-3 bg-gray-800 text-white rounded-full btn-bounce shadow-inner border border-gray-600";
-                playBtn.innerHTML = "🔊";
-                playBtn.onclick = () => speak(current.en);
-                promptCard.appendChild(playBtn);
-                const repeatTxt = document.createElement('p');
-                repeatTxt.className = "mt-1 text-gray-300 font-bold text-xs";
-                repeatTxt.innerText = formatText("Ouvir");
-                promptCard.appendChild(repeatTxt);
+                pc.innerHTML = `<button onclick="speak('${current.en}')" class="text-3xl p-2 bg-gray-800 rounded-full">🔊</button><p class="mt-1 text-gray-300 font-bold text-[10px]">${formatText("Ouvir")}</p>`;
             } else {
-                let questionPrompt = currentLevel === 1 ? current.en : current.pt;
-                promptCard.innerHTML = `<h2 class="text-xl font-bold text-center leading-tight text-white">${formatText(questionPrompt)}</h2>`;
+                let p = (currentLevel >= 4 || currentLevel === 2) ? current.pt : current.en;
+                if (current.en.startsWith('*') && !p.startsWith('*')) p = '*' + p;
+                pc.innerHTML = `<h2 class="text-xl font-bold text-center leading-tight text-white px-2">${formatText(p)}</h2>`;
             }
-            container.appendChild(promptCard);
+            container.appendChild(pc);
 
-            const isHiddenTheme = currentTheme === "⭐ Present Continuous" || currentTheme === "⭐ Sentences";
-            const hideOptions = isHiddenTheme && !window._suggestionsRevealed && !finishedCurrentQuestion;
-
-            if (hideOptions) {
-                const sugBtn = document.createElement('button');
-                sugBtn.className = "w-full bg-yellow-400 text-yellow-900 p-3 rounded-lg text-lg font-bold btn-bounce shadow-lg flex items-center justify-center gap-2 mt-1 border-b-4 border-yellow-500 active:border-b-0";
-                sugBtn.innerHTML = `💡 ${formatText("Sugestões")}`;
-                sugBtn.onclick = () => {
-                    window._suggestionsRevealed = true;
-                    render();
-                };
-                container.appendChild(sugBtn);
-            } else {
-                const grid = document.createElement('div');
-                grid.id = 'options-grid';
-                grid.className = `grid gap-2 mb-1.5 ${finishedCurrentQuestion ? 'reveal-all' : ''}`;
-                
-                options.forEach((opt, index) => {
-                    const btn = document.createElement('button');
-                    btn.className = `option-btn card p-2.5 border-2 border-transparent btn-bounce transition-all min-h-[50px] flex flex-col justify-center items-center bg-white text-black`;
-                    if (selectedWrongIndices.includes(index)) btn.classList.add('wrong', 'revealed-single');
-                    if (finishedCurrentQuestion && opt.en === current.en) btn.classList.add('correct', 'highlight');
-                    
-                    if (currentLevel === 2) {
-                        btn.innerHTML = `<span class="option-text-main">${formatText(opt.en)}</span><span class="option-text-sub">(${formatText(opt.pt)})</span>`;
-                    } else {
-                        btn.innerHTML = `<span class="option-text-main">${formatText(opt.pt)}</span><span class="option-text-sub">(${formatText(opt.en)})</span>`;
-                    }
-                    
-                    btn.onclick = () => checkAnswer(opt, current, index);
-                    grid.appendChild(btn);
+            if (currentLevel === 4) {
+                const da = document.createElement('div'); da.className = "flex justify-center mb-3 flex-wrap gap-1";
+                const cw = current.en.replace(/^\*/,'').toLowerCase();
+                for (let i=0; i<cw.length; i++){
+                    const s = document.createElement('div'); s.className = `letter-slot ${forcedIndices.includes(i)?'forced':''} ${anagramProgress[i]||showVisualHint?'filled':''}`;
+                    s.innerText = showVisualHint ? cw[i] : (anagramProgress[i] || ""); da.appendChild(s);
+                }
+                container.appendChild(da);
+                const lg = document.createElement('div'); lg.className = "flex justify-center flex-wrap gap-2 mb-2";
+                anagramPool.forEach((c, i) => {
+                    const b = document.createElement('div'); b.className = "letter-tile shadow-md btn-bounce";
+                    b.innerText = c.toUpperCase(); b.onclick = () => handleAnagramClick(c, i); lg.appendChild(b);
                 });
-                container.appendChild(grid);
-            }
+                container.appendChild(lg);
+                const hr = document.createElement('div'); hr.className = "flex gap-2 mt-1";
+                const hb = document.createElement('button'); hb.className = "flex-1 bg-blue-50 p-2 rounded-lg font-bold text-[10px]";
+                hb.innerText = "🔊 OUVIR"; hb.onclick = () => triggerHearHint(current.en); hr.appendChild(hb);
+                const sb = document.createElement('button'); sb.className = "flex-1 bg-blue-50 p-2 rounded-lg font-bold text-[10px]";
+                sb.innerText = "👁️ VER (2s)"; sb.onclick = triggerSeeHint; hr.appendChild(sb);
+                container.appendChild(hr);
+            } else if (currentLevel === 5) {
+                const cw = current.en.replace(/^\*/,'').toLowerCase();
+                if (writingPhase === 1) {
+                    const lc = document.createElement('div'); lc.className = "flex justify-center mb-3 flex-wrap gap-1";
+                    for (let i=0; i<cw.length; i++){
+                        const s = document.createElement('div');
+                        const isErr = (i === anagramProgress.length && isAnimatingError);
+                        const isFor = (i === anagramProgress.length && isAnimatingForced);
+                        s.className = `letter-slot ${anagramProgress[i]||showVisualHint?'filled':''} ${forcedIndices.includes(i)?'forced':''} ${isErr?'blinking-error':''} ${isFor?'blinking-forced':''}`;
+                        s.innerText = showVisualHint ? cw[i] : (isErr || isFor ? charToBlink : (anagramProgress[i] || "")); lc.appendChild(s);
+                    }
+                    container.appendChild(lc);
+                    const inp = document.createElement('input'); inp.id='hidden-typing-input'; inp.type="text"; inp.style.position="absolute"; inp.style.opacity="0"; inp.value=anagramProgress; inp.oninput=handleTyping;
+                    container.appendChild(inp); setTimeout(()=>inp.focus(),100);
+                } else {
+                    const iw = document.createElement('div'); iw.className = "flex gap-2 w-full";
+                    const bi = document.createElement('input'); bi.id='big-field-input'; bi.className=`flex-grow p-3 text-center text-xl font-bold rounded-xl border-4 ${isAnimatingError?'blinking-error':''} ${isAnimatingForced?'blinking-forced':''} ${forcedIndices.length>0?'forced-field':''}`;
+                    bi.placeholder=`${cw.length} LETTERS`; bi.value=(isAnimatingError||isAnimatingForced)?(anagramProgress+charToBlink):anagramProgress; bi.oninput=handleTyping; iw.appendChild(bi);
+                    const sm = document.createElement('button'); sm.className="bg-blue-600 text-white p-2.5 rounded-lg text-xl font-bold min-w-[50px]"; sm.innerText="→"; sm.onclick=()=>checkLevelComplete(); iw.appendChild(sm);
+                    container.appendChild(iw); setTimeout(()=>bi.focus(),100);
+                }
+                const hr = document.createElement('div'); hr.className = "flex gap-2 mt-2";
+                const hb = document.createElement('button'); hb.className = "flex-1 bg-blue-50 p-2 rounded-lg font-bold text-[10px]";
+                hb.innerText="🔊 OUVIR"; hb.onclick=()=>triggerHearHint(current.en); hr.appendChild(hb);
+                const sb = document.createElement('button'); sb.className = "flex-1 bg-blue-50 p-2 rounded-lg font-bold text-[10px]";
+                sb.innerText="👁️ VER (2s)"; sb.onclick=triggerSeeHint; hr.appendChild(sb); container.appendChild(hr);
+            } else {
+                const os = getOptions(current, PROVAS[currentProva].themes[currentTheme]);
+                const g = document.createElement('div'); g.className = "grid gap-2";
+                os.forEach((o, i) => {
+                    const b = document.createElement('button'); 
+                    b.className = "card p-3 flex flex-col items-center border-2 border-transparent transition-all";
+                    if (selectedWrongIndices.includes(i)) b.classList.add('wrong');
+                    if (finishedCurrentQuestion && o.en === current.en) b.classList.add('correct', 'highlight');
+                    
+                    const isEnMain = (currentLevel === 2);
+                    const mainTxt = isEnMain ? o.en : o.pt;
+                    const subTxt = isEnMain ? o.pt : o.en;
 
+                    b.innerHTML = `<span class="font-bold">${formatText(mainTxt)}</span>`;
+                    const isRevealed = finishedCurrentQuestion || selectedWrongIndices.includes(i);
+                    if (isRevealed) {
+                        b.innerHTML += `<span class="text-[10px] opacity-60">(${formatText(subTxt)})</span>`;
+                    }
+                    b.onclick = () => checkAnswer(o, current, i); g.appendChild(b);
+                });
+                container.appendChild(g);
+            }
             if (showNextButton) {
-                const nextBtn = document.createElement('button');
-                nextBtn.className = "w-full bg-blue-600 text-white p-3 rounded-lg text-lg font-bold btn-bounce shadow-xl flex items-center justify-center gap-2 animate-pulse mt-0.5 border-b-4 border-blue-800 active:border-b-0";
-                nextBtn.innerHTML = `${formatText("Próximo")} <span class="text-xl">→</span>`;
-                nextBtn.onclick = nextQuestion;
-                container.appendChild(nextBtn);
+                const nb = document.createElement('button'); nb.className="w-full bg-blue-600 text-white p-3 rounded-lg text-xl font-bold mt-2 animate-pulse";
+                nb.innerText=formatText("Próximo →"); nb.onclick=nextQuestion; container.appendChild(nb);
             }
         }
-
         function renderFinish() {
-            container.innerHTML = '';
-            screenTitle.innerText = formatText("Parabéns!");
-            container.innerHTML = `<div class="card p-6 text-center flex flex-col gap-3"><div class="text-4xl">🏆</div><h2 class="text-xl font-bold">${formatText("Incrível!")}</h2><p class="text-base">${formatText("Você terminou o")} <b>${formatText("Nível " + currentLevel)}</b>!</p><button id="finish-btn" class="bg-blue-600 text-white p-3 rounded-lg text-lg font-bold btn-bounce mt-1 shadow-lg">${formatText("Continuar")}</button></div>`;
-            document.getElementById('finish-btn').onclick = () => setScreen('levels');
-            speak("Incrível! Excelente trabalho!", "pt-BR");
+            container.innerHTML = `<div class="card p-6 text-center flex flex-col gap-3"><div class="text-4xl">🏆</div><h2 class="text-xl font-bold">${formatText("Incrível!")}</h2><p>${formatText("Nível " + currentLevel)} concluído!</p><button id="fb" class="bg-blue-600 text-white p-3 rounded-lg font-bold">${formatText("Continuar")}</button></div>`;
+            document.getElementById('fb').onclick = () => setScreen('levels'); speak("Incrível! Excelente trabalho!", "pt-BR");
         }
-
         function render() {
-            container.innerHTML = '';
-            backBtn.classList.toggle('hidden', currentScreen === 'home');
-            switch (currentScreen) {
-                case 'home': renderHome(); break;
-                case 'themes': renderThemes(); break;
-                case 'vocabulary': renderVocabulary(); break;
-                case 'levels': renderLevels(); break;
-                case 'game': renderGame(); break;
-                case 'finish': renderFinish(); break;
-            }
+            container.innerHTML = ''; backBtn.classList.toggle('hidden', currentScreen === 'home');
+            if(currentScreen==='home') renderHome(); else if(currentScreen==='themes') renderThemes(); else if(currentScreen==='vocabulary') renderVocabulary(); else if(currentScreen==='levels') renderLevels(); else if(currentScreen==='game') renderGame(); else if(currentScreen==='finish') renderFinish();
         }
-
         render();
     </script>
 </body>
