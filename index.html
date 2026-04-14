@@ -61,7 +61,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // --- 1. DATA AND STATE ---
+            // --- 1. CONFIG & ASSETS ---
             const ICONS = {
                 eye: `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>`,
                 eyeOff: `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a10.014 10.014 0 012.183-3.883m3.66-3.66A10.001 10.001 0 0112 5c4.478 0 8.268 2.943 9.542 7a10.059 10.059 0 01-4.125 4.875M3 3l18 18M9.88 9.88a3 3 0 104.24 4.24" /></svg>`,
@@ -102,7 +102,7 @@
                 }
             };
 
-            // --- 2. ELEMENTS & STATE ---
+            // --- 2. GLOBAL STATE ---
             const container = document.getElementById('main-container');
             const screenTitle = document.getElementById('screen-title');
             const backBtn = document.getElementById('back-btn');
@@ -127,8 +127,8 @@
 
             let ptVoice = null;
             function loadVoices() {
-                const v = window.speechSynthesis.getVoices();
-                ptVoice = v.find(x => x.lang === 'pt-BR' && x.name.includes('Google')) || v.find(x => x.lang === 'pt-BR');
+                const voices = window.speechSynthesis.getVoices();
+                ptVoice = voices.find(x => x.lang === 'pt-BR' && x.name.includes('Google')) || voices.find(x => x.lang === 'pt-BR');
             }
             window.speechSynthesis.onvoiceschanged = loadVoices;
             loadVoices();
@@ -156,7 +156,6 @@
                 setTimeout(() => { flashErrorIdx = -1; render(); }, 300);
             }
 
-            // --- 4. MASTERY & PROGRESS ---
             function checkP1MainCompletion() {
                 const themes = PROVAS_DATA["P1"].themes;
                 for (const tKey in themes) {
@@ -169,7 +168,22 @@
                 return true;
             }
 
-            // --- 5. LOGIC HELPERS ---
+            // --- 4. NAVIGATION ---
+            function setScreen(name) {
+                currentScreen = name;
+                if (name === 'vocabulary') { vocabOnlyStars = globalOnlyAsterisk; vocabRevealedIndices.clear(); vocabHiddenCol = 'none'; }
+                render();
+            }
+
+            backBtn.onclick = function() {
+                if (currentScreen === 'vocabulary') setScreen('themes');
+                else if (currentScreen === 'levels') setScreen('themes');
+                else if (currentScreen === 'themes') setScreen('home');
+                else if (currentScreen === 'game' || currentScreen === 'finish') setScreen('levels');
+                else setScreen('home');
+            };
+
+            // --- 5. LOGIC CONTROLLERS ---
             function getOptions(cur, pool) {
                 if (window._currentOpts && window._currentId === currentIndex) return window._currentOpts;
                 let opts = [cur];
@@ -190,21 +204,92 @@
                 return opts;
             }
 
-            function setScreen(name) {
-                currentScreen = name;
-                if (name === 'vocabulary') { vocabOnlyStars = globalOnlyAsterisk; vocabRevealedIndices.clear(); vocabHiddenCol = 'none'; }
+            function startTheme(p, t, l) {
+                currentProva = p; currentTheme = t; currentLevel = l; redoList = []; perfectSolvesInPhase = 0;
+                let pool = [...PROVAS_DATA[p].themes[t]];
+                if (l === 4 || globalOnlyAsterisk) pool = pool.filter(i => i.en.startsWith('*'));
+                questionList = pool; shuffle(questionList); totalStarWords = pool.length; currentIndex = 0;
+                setScreen('game'); playQuestion();
+            }
+
+            function playQuestion() {
+                finishedCurrentQuestion = false; attemptCount = 0; selectedWrongIndices = []; 
+                anagramProgress = []; forcedIndices = []; showVisualHint = false; showNextButton = false;
+                flashErrorIdx = -1; window._currentOpts = null;
+                const cur = questionList[currentIndex]; if (!cur) return;
+                const clean = cur.en.replace(/^\*/, '');
+                if ((currentTheme.includes("Sentences") || currentTheme.includes("Continuous")) && currentLevel === 4) { anagramPool = clean.split(' '); shuffle(anagramPool); }
+                else if (currentLevel >= 4) { anagramPool = clean.split(''); shuffle(anagramPool); }
+                speak((currentLevel===2||currentLevel>=4)?cur.pt:cur.en, (currentLevel===2||currentLevel>=4)?'pt-BR':'en-US');
                 render();
             }
 
-            backBtn.onclick = function() {
-                if (currentScreen === 'vocabulary') setScreen('themes');
-                else if (currentScreen === 'levels') setScreen('themes');
-                else if (currentScreen === 'themes') setScreen('home');
-                else if (currentScreen === 'game' || currentScreen === 'finish') setScreen('levels');
-                else setScreen('home');
-            };
+            function handleAnagramClick(item, idx) {
+                if (finishedCurrentQuestion || isHintLocked) return;
+                const target = questionList[currentIndex].en.replace(/^\*/, '');
+                const isS = currentTheme.includes("Sentences") || currentTheme.includes("Continuous");
+                const targetArray = isS ? target.split(' ') : target.split('');
+                if (item === targetArray[anagramProgress.length]) {
+                    anagramProgress.push(item); anagramPool.splice(idx, 1);
+                    wrongAttemptsPerPos = 0; checkPuzzleComplete(); render();
+                } else {
+                    wrongAttemptsPerPos++;
+                    if (wrongAttemptsPerPos >= 2) {
+                        forcedIndices.push(anagramProgress.length);
+                        const cVal = targetArray[anagramProgress.length];
+                        anagramProgress.push(cVal);
+                        const pIdx = anagramPool.indexOf(cVal); if (pIdx !== -1) anagramPool.splice(pIdx, 1);
+                        wrongAttemptsPerPos = 0; checkPuzzleComplete(); render();
+                    } else triggerErrorFlash();
+                }
+            }
 
-            // --- 6. RENDERERS ---
+            function handleTyping(e) {
+                const isS = currentTheme.includes("Sentences") || currentTheme.includes("Continuous");
+                if (finishedCurrentQuestion || isHintLocked || isS) return;
+                const inputVal = e.target.value.toLowerCase(), tTxt = questionList[currentIndex].en.replace(/^\*/,'').toLowerCase();
+                if (inputVal.length > anagramProgress.length) {
+                    const typed = inputVal[inputVal.length-1], req = tTxt[anagramProgress.length];
+                    if (typed === req) { anagramProgress.push(typed); wrongAttemptsPerPos = 0; if(anagramProgress.length === tTxt.length) checkPuzzleComplete(); render(); }
+                    else { wrongAttemptsPerPos++; if (wrongAttemptsPerPos >= 2) { forcedIndices.push(anagramProgress.length); anagramProgress.push(req); wrongAttemptsPerPos = 0; if(anagramProgress.length === tTxt.length) checkPuzzleComplete(); render(); } else triggerErrorFlash(); }
+                }
+            }
+
+            function checkPuzzleComplete() {
+                const cur = questionList[currentIndex];
+                const clean = cur.en.replace(/^\*/, '');
+                const isS = currentTheme.includes("Sentences") || currentTheme.includes("Continuous");
+                const tLen = isS ? clean.split(' ').length : clean.length;
+                if (anagramProgress.length === tLen) {
+                    finishedCurrentQuestion = true; speak(cur.en);
+                    if (forcedIndices.length > 0) redoList.push(cur); else perfectSolvesInPhase++;
+                    setTimeout(() => { showNextButton = true; render(); }, 1000);
+                }
+            }
+
+            function checkAnswer(sel, correct, idx) {
+                if (finishedCurrentQuestion) return;
+                attemptCount++;
+                if (sel.en === correct.en) {
+                    finishedCurrentQuestion = true; if (attemptCount === 1) perfectSolvesInPhase++;
+                    showFeedback(formatText("Incrível! 🌟"), "#48bb78"); speak("Well done"); triggerReview(correct);
+                } else {
+                    selectedWrongIndices.push(idx);
+                    if (attemptCount === 1) { showFeedback(formatText("Tente outra vez!"), "#f56565"); speak("Try again"); render(); }
+                    else { finishedCurrentQuestion = true; redoList.push(correct); triggerReview(correct); }
+                }
+            }
+
+            function triggerReview(cor) {
+                render(); 
+                setTimeout(() => {
+                    const f = currentLevel===2 ? {t:cor.pt,l:'pt-BR'} : {t:cor.en,l:'en-US'};
+                    const s = currentLevel===2 ? {t:cor.en,l:'en-US'} : {t:cor.pt,l:'pt-BR'};
+                    speak(f.t, f.l, () => { setTimeout(() => { speak(s.t, s.l, () => { showNextButton = true; render(); }); }, 300); });
+                }, 400);
+            }
+
+            // --- 6. UI RENDERERS ---
             function createToggleUI(isChecked, onChg) {
                 const f = document.createElement('fieldset');
                 f.className = "border-2 border-blue-400 rounded-xl px-4 pb-3 mb-4";
@@ -227,7 +312,7 @@
                 container.innerHTML = ''; screenTitle.innerText = formatText("Vamos estudar inglês - 4");
                 const hR = document.createElement('div'); hR.className = "flex justify-end mb-4 w-full";
                 const cb = document.createElement('button');
-                cb.className = `p-2.5 rounded-xl font-bold border-2 text-xs ${isAllCaps ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white border-gray-300 text-gray-500'}`;
+                cb.className = `p-2.5 rounded-xl font-bold border-2 transition-all btn-bounce text-xs ${isAllCaps ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white border-gray-300 text-gray-500'}`;
                 cb.innerText = formatText("Apenas maiúsculas");
                 cb.onclick = () => { isAllCaps = !isAllCaps; localStorage.setItem('english_quest_caps', isAllCaps); render(); };
                 hR.appendChild(cb); container.appendChild(hR);
@@ -314,14 +399,11 @@
             function renderLevels() {
                 container.innerHTML = ''; screenTitle.innerText = currentTheme;
                 const lvls = [{id:1,t:"Nível 1",s:"En → Pt"},{id:2,t:"Nível 2",s:"Pt → En"},{id:3,t:"Nível 3",s:"🎧 Só Áudio"}];
-                
-                // Rule: Only add 4/5 if category has main terms (*)
                 const hasStars = PROVAS_DATA[currentProva].themes[currentTheme].some(i => i.en.startsWith('*'));
                 if (hasStars) {
                     if (currentTheme.includes("Sentences") || currentTheme.includes("Continuous")) lvls.push({id:4,t:"Nível 4",s:"🧩 Puzzle (*)"});
                     else lvls.push({id:4,t:"Nível 4",s:"🧩 Anagrama (*)"}, {id:5,t:"Nível 5",s:"⌨️ Escrever (*)"});
                 }
-
                 const done = userProgress[`${currentProva}_${currentTheme}`] || [];
                 lvls.forEach((l, idx) => {
                     const isC = done.includes(l.id), isL = idx > 0 && !done.includes(lvls[idx-1].id);
@@ -330,92 +412,6 @@
                     if (!isL) b.onclick = () => startTheme(currentProva, currentTheme, l.id);
                     container.appendChild(b);
                 });
-            }
-
-            // --- 7. GAMEPLAY ---
-            function startTheme(p, t, l) {
-                currentProva = p; currentTheme = t; currentLevel = l; redoList = []; perfectSolvesInPhase = 0;
-                let pool = [...PROVAS_DATA[p].themes[t]];
-                if (l === 4 || globalOnlyAsterisk) pool = pool.filter(i => i.en.startsWith('*'));
-                questionList = pool; shuffle(questionList); totalStarWords = pool.length; currentIndex = 0;
-                setScreen('game'); playQuestion();
-            }
-
-            function playQuestion() {
-                finishedCurrentQuestion = false; attemptCount = 0; selectedWrongIndices = []; 
-                anagramProgress = []; forcedIndices = []; showVisualHint = false; showNextButton = false;
-                flashErrorIdx = -1; window._currentOpts = null;
-                const cur = questionList[currentIndex]; if (!cur) return;
-                const clean = cur.en.replace(/^\*/, '');
-                if ((currentTheme.includes("Sentences") || currentTheme.includes("Continuous")) && currentLevel === 4) { anagramPool = clean.split(' '); shuffle(anagramPool); }
-                else if (currentLevel >= 4) { anagramPool = clean.split(''); shuffle(anagramPool); }
-                speak((currentLevel===2||currentLevel>=4)?cur.pt:cur.en, (currentLevel===2||currentLevel>=4)?'pt-BR':'en-US');
-                render();
-            }
-
-            function triggerReview(cor) {
-                render(); 
-                setTimeout(() => {
-                    const f = currentLevel===2 ? {t:cor.pt,l:'pt-BR'} : {t:cor.en,l:'en-US'};
-                    const s = currentLevel===2 ? {t:cor.en,l:'en-US'} : {t:cor.pt,l:'pt-BR'};
-                    speak(f.t, f.l, () => { setTimeout(() => { speak(s.t, s.l, () => { showNextButton = true; render(); }); }, 300); });
-                }, 400);
-            }
-
-            function handleAnagramClick(item, idx) {
-                if (finishedCurrentQuestion || isHintLocked) return;
-                const target = questionList[currentIndex].en.replace(/^\*/, '');
-                const isS = currentTheme.includes("Sentences") || currentTheme.includes("Continuous");
-                const targetArray = isS ? target.split(' ') : target.split('');
-                if (item === targetArray[anagramProgress.length]) {
-                    anagramProgress.push(item); anagramPool.splice(idx, 1);
-                    wrongAttemptsPerPos = 0; checkPuzzleComplete(); render();
-                } else {
-                    wrongAttemptsPerPos++;
-                    if (wrongAttemptsPerPos >= 2) {
-                        forcedIndices.push(anagramProgress.length);
-                        const cVal = targetArray[anagramProgress.length];
-                        anagramProgress.push(cVal);
-                        const pIdx = anagramPool.indexOf(cVal); if (pIdx !== -1) anagramPool.splice(pIdx, 1);
-                        wrongAttemptsPerPos = 0; checkPuzzleComplete(); render();
-                    } else triggerErrorFlash();
-                }
-            }
-
-            function handleTyping(e) {
-                const isS = currentTheme.includes("Sentences") || currentTheme.includes("Continuous");
-                if (finishedCurrentQuestion || isHintLocked || isS) return;
-                const v = e.target.value.toLowerCase(), tTxt = questionList[currentIndex].en.replace(/^\*/,'').toLowerCase();
-                if (v.length > anagramProgress.length) {
-                    const typed = v[v.length-1], req = tTxt[anagramProgress.length];
-                    if (typed === req) { anagramProgress.push(typed); wrongAttemptsPerPos = 0; if(anagramProgress.length === tTxt.length) checkPuzzleComplete(); render(); }
-                    else { wrongAttemptsPerPos++; if (wrongAttemptsPerPos >= 2) { forcedIndices.push(anagramProgress.length); anagramProgress.push(req); wrongAttemptsPerPos = 0; if(anagramProgress.length === tTxt.length) checkPuzzleComplete(); render(); } else triggerErrorFlash(); }
-                }
-            }
-
-            function checkPuzzleComplete() {
-                const cur = questionList[currentIndex];
-                const clean = cur.en.replace(/^\*/, '');
-                const isS = currentTheme.includes("Sentences") || currentTheme.includes("Continuous");
-                const tLen = isS ? clean.split(' ').length : clean.length;
-                if (anagramProgress.length === tLen) {
-                    finishedCurrentQuestion = true; speak(cur.en);
-                    if (forcedIndices.length > 0) redoList.push(cur); else perfectSolvesInPhase++;
-                    setTimeout(() => { showNextButton = true; render(); }, 1000);
-                }
-            }
-
-            function checkAnswer(sel, cor, idx) {
-                if (finishedCurrentQuestion) return;
-                attemptCount++;
-                if (sel.en === cor.en) {
-                    finishedCurrentQuestion = true; if (attemptCount === 1) perfectSolvesInPhase++;
-                    showFeedback(formatText("Incrível! 🌟"), "#48bb78"); speak("Well done"); triggerReview(cor);
-                } else {
-                    selectedWrongIndices.push(idx);
-                    if (attemptCount === 1) { showFeedback(formatText("Tente outra vez!"), "#f56565"); speak("Try again"); render(); }
-                    else { finishedCurrentQuestion = true; redoList.push(cor); triggerReview(cor); }
-                }
             }
 
             function renderGame() {
@@ -446,6 +442,7 @@
                         container.appendChild(lg);
                     } else {
                         const inp = document.createElement('input'); inp.id='hidden-typing-input'; inp.type="text"; inp.style.position="absolute"; inp.style.opacity="0"; 
+                        inp.value = anagramProgress.join(''); // SYNC VALUE
                         inp.oninput = handleTyping; container.appendChild(inp); setTimeout(()=>inp.focus(),100);
                     }
                     const hR = document.createElement('div'); hR.className = "flex gap-2 w-full mt-2";
