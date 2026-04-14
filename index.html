@@ -61,7 +61,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // --- 1. CONFIG AND ASSETS ---
+            // --- 1. DATA AND STATE ---
             const ICONS = {
                 eye: `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>`,
                 eyeOff: `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a10.014 10.014 0 012.183-3.883m3.66-3.66A10.001 10.001 0 0112 5c4.478 0 8.268 2.943 9.542 7a10.059 10.059 0 01-4.125 4.875M3 3l18 18M9.88 9.88a3 3 0 104.24 4.24" /></svg>`,
@@ -102,7 +102,7 @@
                 }
             };
 
-            // --- 2. GLOBAL STATE ---
+            // --- 2. ELEMENTS & STATE ---
             const container = document.getElementById('main-container');
             const screenTitle = document.getElementById('screen-title');
             const backBtn = document.getElementById('back-btn');
@@ -156,7 +156,7 @@
                 setTimeout(() => { flashErrorIdx = -1; render(); }, 300);
             }
 
-            // --- 4. MASTERY & PROGRESS LOCK LOGIC ---
+            // --- 4. MASTERY & PROGRESS ---
             function checkP1MainCompletion() {
                 const themes = PROVAS_DATA["P1"].themes;
                 for (const tKey in themes) {
@@ -169,7 +169,7 @@
                 return true;
             }
 
-            // --- 5. DATA LOGIC ---
+            // --- 5. LOGIC HELPERS ---
             function getOptions(cur, pool) {
                 if (window._currentOpts && window._currentId === currentIndex) return window._currentOpts;
                 let opts = [cur];
@@ -190,7 +190,6 @@
                 return opts;
             }
 
-            // --- 6. NAVIGATION ---
             function setScreen(name) {
                 currentScreen = name;
                 if (name === 'vocabulary') { vocabOnlyStars = globalOnlyAsterisk; vocabRevealedIndices.clear(); vocabHiddenCol = 'none'; }
@@ -205,7 +204,7 @@
                 else setScreen('home');
             };
 
-            // --- 7. RENDERING HELPERS ---
+            // --- 6. RENDERERS ---
             function createToggleUI(isChecked, onChg) {
                 const f = document.createElement('fieldset');
                 f.className = "border-2 border-blue-400 rounded-xl px-4 pb-3 mb-4";
@@ -216,7 +215,7 @@
                 lS.innerText = formatText("Apenas *principais");
                 const tL = document.createElement('label'); tL.className = "toggle-switch";
                 const inp = document.createElement('input'); inp.type = "checkbox"; inp.checked = isChecked; inp.onchange = onChg;
-                const sli = document.createElement('span'); sli.className = `slider ${isChecked ? 'slider-black' : 'slider-red'}`;
+                const sli = document.createElement('span'); sli.className = `slider`;
                 tL.append(inp, sli);
                 const rS = document.createElement('span'); rS.className = "text-[11px] font-bold transition-opacity";
                 rS.style.color = "#000000"; rS.style.opacity = isChecked ? "1" : "0.4";
@@ -228,15 +227,21 @@
                 container.innerHTML = ''; screenTitle.innerText = formatText("Vamos estudar inglês - 4");
                 const hR = document.createElement('div'); hR.className = "flex justify-end mb-4 w-full";
                 const cb = document.createElement('button');
-                cb.className = `p-2.5 rounded-xl font-bold border-2 transition-all btn-bounce text-xs ${isAllCaps ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white border-gray-300 text-gray-500'}`;
+                cb.className = `p-2.5 rounded-xl font-bold border-2 text-xs ${isAllCaps ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white border-gray-300 text-gray-500'}`;
                 cb.innerText = formatText("Apenas maiúsculas");
                 cb.onclick = () => { isAllCaps = !isAllCaps; localStorage.setItem('english_quest_caps', isAllCaps); render(); };
                 hR.appendChild(cb); container.appendChild(hR);
                 Object.keys(PROVAS_DATA).forEach(p => {
-                    const isP2 = (p === "P2"); const isD = !isP2 || checkP1MainCompletion();
-                    const b = document.createElement('button'); b.className = `card p-4 text-xl font-bold mb-2 ${!isD ? 'locked bg-gray-100' : 'bg-white border-b-4 border-blue-200'}`;
+                    const isP2 = (p === "P2"); const isDone = !isP2 || checkP1MainCompletion();
+                    const b = document.createElement('button'); b.className = `card p-4 text-xl font-bold mb-2 ${!isDone ? 'locked bg-gray-100' : 'bg-white border-b-4 border-blue-200'}`;
                     b.innerText = formatText("Prova " + p);
-                    b.onclick = () => { if (!isD) { const m = "Termine de estudar o vocabulário principal da P1 primeiro"; showFeedback(formatText(m), "#f56565", 5000); speak(m, "pt-BR"); } else { currentProva = p; setScreen('themes'); } };
+                    b.onclick = () => { 
+                        if (!isDone) {
+                            const msg = "Termine de estudar o vocabulário principal da P1 primeiro";
+                            showFeedback(formatText(msg), "#f56565", 5000);
+                            speak(msg, "pt-BR");
+                        } else { currentProva = p; setScreen('themes'); }
+                    };
                     container.appendChild(b);
                 });
             }
@@ -281,11 +286,24 @@
                     const isEH = vocabHiddenCol === 'en' && !vocabRevealedIndices.has(i);
                     const isPH = vocabHiddenCol === 'pt' && !vocabRevealedIndices.has(i);
                     const tdE = document.createElement('td'); tdE.className = "w-1/2";
-                    tdE.innerHTML = `<div class="flex items-center gap-1.5"><button class="p-1 bg-blue-50 text-blue-600 rounded-full" onclick="window.speak('${w.en.replace("'","\\'")}')">${ICONS.sound}</button>${vocabHiddenCol==='en'?`<button class="p-1 btn-reveal">${isEH?ICONS.eye:ICONS.eyeOff}</button>`:''}<span>${isEH?"":formatText(w.en)}</span></div>`;
-                    if (vocabHiddenCol === 'en') tdE.querySelector('.btn-reveal').onclick = () => { vocabRevealedIndices.has(i)?vocabRevealedIndices.delete(i):vocabRevealedIndices.add(i); renderVocabulary(); };
+                    const divE = document.createElement('div'); divE.className = "flex items-center gap-1.5";
+                    const spkE = document.createElement('button'); spkE.className = "p-1 bg-blue-50 text-blue-600 rounded-full"; spkE.innerHTML = ICONS.sound; spkE.onclick = () => speak(w.en); divE.appendChild(spkE);
+                    if (vocabHiddenCol === 'en') {
+                        const revE = document.createElement('button'); revE.className = "p-1"; revE.innerHTML = isEH ? ICONS.eye : ICONS.eyeOff;
+                        revE.onclick = () => { vocabRevealedIndices.has(i) ? vocabRevealedIndices.delete(i) : vocabRevealedIndices.add(i); renderVocabulary(); };
+                        divE.appendChild(revE);
+                    }
+                    const spanE = document.createElement('span'); spanE.innerText = isEH ? "" : formatText(w.en); divE.appendChild(spanE);
+                    tdE.appendChild(divE);
                     const tdP = document.createElement('td'); tdP.className = "w-1/2 text-right";
-                    tdP.innerHTML = `<div class="flex items-center justify-end gap-1.5"><span>${isPH?"":formatText(w.pt)}</span>${vocabHiddenCol==='pt'?`<button class="p-1 btn-reveal">${isPH?ICONS.eye:ICONS.eyeOff}</button>`:''}</div>`;
-                    if (vocabHiddenCol === 'pt') tdP.querySelector('.btn-reveal').onclick = () => { vocabRevealedIndices.has(i)?vocabRevealedIndices.delete(i):vocabRevealedIndices.add(i); renderVocabulary(); };
+                    const divP = document.createElement('div'); divP.className = "flex items-center justify-end gap-1.5";
+                    const spanP = document.createElement('span'); spanP.innerText = isPH ? "" : formatText(w.pt); divP.appendChild(spanP);
+                    if (vocabHiddenCol === 'pt') {
+                        const revP = document.createElement('button'); revP.className = "p-1"; revP.innerHTML = isPH ? ICONS.eye : ICONS.eyeOff;
+                        revP.onclick = () => { vocabRevealedIndices.has(i) ? vocabRevealedIndices.delete(i) : vocabRevealedIndices.add(i); renderVocabulary(); };
+                        divP.appendChild(revP);
+                    }
+                    tdP.appendChild(divP);
                     row.append(tdE, tdP); tbody.appendChild(row);
                 });
                 table.appendChild(tbody); wrap.appendChild(table); container.appendChild(wrap);
@@ -296,11 +314,14 @@
             function renderLevels() {
                 container.innerHTML = ''; screenTitle.innerText = currentTheme;
                 const lvls = [{id:1,t:"Nível 1",s:"En → Pt"},{id:2,t:"Nível 2",s:"Pt → En"},{id:3,t:"Nível 3",s:"🎧 Só Áudio"}];
-                const starThemes = ["Family", "Numbers", "Adjectives", "Verbs", "Location", "Other", "Animals", "Sentences", "Continuous"];
-                if (starThemes.some(st => currentTheme.includes(st))) {
+                
+                // Rule: Only add 4/5 if category has main terms (*)
+                const hasStars = PROVAS_DATA[currentProva].themes[currentTheme].some(i => i.en.startsWith('*'));
+                if (hasStars) {
                     if (currentTheme.includes("Sentences") || currentTheme.includes("Continuous")) lvls.push({id:4,t:"Nível 4",s:"🧩 Puzzle (*)"});
-                    else { lvls.push({id:4,t:"Nível 4",s:"🧩 Anagrama (*)"}, {id:5,t:"Nível 5",s:"⌨️ Escrever (*)"}); }
+                    else lvls.push({id:4,t:"Nível 4",s:"🧩 Anagrama (*)"}, {id:5,t:"Nível 5",s:"⌨️ Escrever (*)"});
                 }
+
                 const done = userProgress[`${currentProva}_${currentTheme}`] || [];
                 lvls.forEach((l, idx) => {
                     const isC = done.includes(l.id), isL = idx > 0 && !done.includes(lvls[idx-1].id);
@@ -311,7 +332,7 @@
                 });
             }
 
-            // --- 8. GAMEPLAY LOGIC ---
+            // --- 7. GAMEPLAY ---
             function startTheme(p, t, l) {
                 currentProva = p; currentTheme = t; currentLevel = l; redoList = []; perfectSolvesInPhase = 0;
                 let pool = [...PROVAS_DATA[p].themes[t]];
@@ -328,10 +349,17 @@
                 const clean = cur.en.replace(/^\*/, '');
                 if ((currentTheme.includes("Sentences") || currentTheme.includes("Continuous")) && currentLevel === 4) { anagramPool = clean.split(' '); shuffle(anagramPool); }
                 else if (currentLevel >= 4) { anagramPool = clean.split(''); shuffle(anagramPool); }
-                let txt = (currentLevel === 2 || currentLevel >= 4) ? cur.pt : cur.en;
-                if (cur.en.startsWith('*') && !txt.startsWith('*')) txt = '*' + txt;
-                speak(txt, (currentLevel === 2 || currentLevel >= 4) ? 'pt-BR' : 'en-US');
+                speak((currentLevel===2||currentLevel>=4)?cur.pt:cur.en, (currentLevel===2||currentLevel>=4)?'pt-BR':'en-US');
                 render();
+            }
+
+            function triggerReview(cor) {
+                render(); 
+                setTimeout(() => {
+                    const f = currentLevel===2 ? {t:cor.pt,l:'pt-BR'} : {t:cor.en,l:'en-US'};
+                    const s = currentLevel===2 ? {t:cor.en,l:'en-US'} : {t:cor.pt,l:'pt-BR'};
+                    speak(f.t, f.l, () => { setTimeout(() => { speak(s.t, s.l, () => { showNextButton = true; render(); }); }, 300); });
+                }, 400);
             }
 
             function handleAnagramClick(item, idx) {
@@ -346,9 +374,9 @@
                     wrongAttemptsPerPos++;
                     if (wrongAttemptsPerPos >= 2) {
                         forcedIndices.push(anagramProgress.length);
-                        const cor = targetArray[anagramProgress.length];
-                        anagramProgress.push(cor);
-                        const pIdx = anagramPool.indexOf(cor); if (pIdx !== -1) anagramPool.splice(pIdx, 1);
+                        const cVal = targetArray[anagramProgress.length];
+                        anagramProgress.push(cVal);
+                        const pIdx = anagramPool.indexOf(cVal); if (pIdx !== -1) anagramPool.splice(pIdx, 1);
                         wrongAttemptsPerPos = 0; checkPuzzleComplete(); render();
                     } else triggerErrorFlash();
                 }
@@ -390,15 +418,6 @@
                 }
             }
 
-            function triggerReview(cor) {
-                render(); 
-                setTimeout(() => {
-                    const f = currentLevel===2 ? {t:cor.pt,l:'pt-BR'} : {t:cor.en,l:'en-US'};
-                    const s = currentLevel===2 ? {t:cor.en,l:'en-US'} : {t:cor.pt,l:'pt-BR'};
-                    speak(f.t, f.l, () => { setTimeout(() => { speak(s.t, s.l, () => { showNextButton = true; render(); }); }, 300); });
-                }, 400);
-            }
-
             function renderGame() {
                 container.innerHTML = ''; const cur = questionList[currentIndex]; if (!cur) return;
                 screenTitle.innerText = currentLevel >= 4 ? `${perfectSolvesInPhase}/${totalStarWords * (currentLevel===5?2:1)}` : `${currentIndex+1}/${questionList.length}`;
@@ -406,9 +425,11 @@
                 if (currentLevel === 3) pc.innerHTML = `<button class="text-3xl p-2 bg-gray-800 rounded-full" onclick="window.speak('${cur.en.replace("'","\\'")}')">${ICONS.sound.replace('w-3.5 h-3.5','w-8 h-8')}</button>`;
                 else pc.innerHTML = `<h2 class="text-xl font-bold text-center text-white px-2">${formatText((currentLevel>=4||currentLevel===2)?cur.pt:cur.en)}</h2>`;
                 container.appendChild(pc);
-                if (currentLevel === 4) {
+                
+                if (currentLevel === 4 || currentLevel === 5) {
+                    const isPuzzle = currentLevel === 4;
                     const isS = currentTheme.includes("Sentences") || currentTheme.includes("Continuous");
-                    const target = isS ? cur.en.replace(/^\*/,'').split(' ') : cur.en.replace(/^\*/,'').split('');
+                    const target = (isS && isPuzzle) ? cur.en.replace(/^\*/,'').split(' ') : cur.en.replace(/^\*/,'').split('');
                     const da = document.createElement('div'); da.className = "flex justify-center mb-3 flex-wrap gap-1";
                     target.forEach((val, i) => {
                         const s = document.createElement('div');
@@ -416,31 +437,21 @@
                         s.innerText = showVisualHint ? val : (anagramProgress[i] || ""); da.appendChild(s);
                     });
                     container.appendChild(da);
-                    const lg = document.createElement('div'); lg.className = "flex justify-center flex-wrap gap-2 mb-2";
-                    anagramPool.forEach((item, i) => {
-                        const b = document.createElement('div'); b.className = "letter-tile shadow-md btn-bounce";
-                        b.innerText = item.toUpperCase(); b.onclick = () => handleAnagramClick(item, i); lg.appendChild(b);
-                    });
-                    container.appendChild(lg);
-                    const hRow = document.createElement('div'); hRow.className = "flex gap-2 w-full mt-2";
+                    if (isPuzzle) {
+                        const lg = document.createElement('div'); lg.className = "flex justify-center flex-wrap gap-2 mb-2";
+                        anagramPool.forEach((item, i) => {
+                            const b = document.createElement('div'); b.className = "letter-tile shadow-md btn-bounce";
+                            b.innerText = item.toUpperCase(); b.onclick = () => handleAnagramClick(item, i); lg.appendChild(b);
+                        });
+                        container.appendChild(lg);
+                    } else {
+                        const inp = document.createElement('input'); inp.id='hidden-typing-input'; inp.type="text"; inp.style.position="absolute"; inp.style.opacity="0"; 
+                        inp.oninput = handleTyping; container.appendChild(inp); setTimeout(()=>inp.focus(),100);
+                    }
+                    const hR = document.createElement('div'); hR.className = "flex gap-2 w-full mt-2";
                     const hb = document.createElement('button'); hb.className="flex-1 bg-blue-50 p-2 rounded-lg font-bold text-[10px]"; hb.innerText="🔊 OUVIR"; hb.onclick=()=> { isHintLocked=true; speak(cur.en, 'en-US', ()=> {isHintLocked=false; render();}); };
                     const sb = document.createElement('button'); sb.className="flex-1 bg-blue-50 p-2 rounded-lg font-bold text-[10px]"; sb.innerText="👁️ VER (2s)"; sb.onclick=()=> { isHintLocked=true; showVisualHint=true; render(); setTimeout(()=>{showVisualHint=false; isHintLocked=false; render();}, 2000); };
-                    hRow.append(hb, sb); container.appendChild(hRow);
-                } else if (currentLevel === 5) {
-                    const t = cur.en.replace(/^\*/,'').split('');
-                    const da = document.createElement('div'); da.className = "flex justify-center mb-3 flex-wrap gap-1";
-                    t.forEach((v, i) => {
-                        const s = document.createElement('div');
-                        s.className = `letter-slot ${forcedIndices.includes(i)?'forced':''} ${anagramProgress[i]||showVisualHint?'filled':''} ${i === flashErrorIdx ? 'error-flash' : ''}`;
-                        s.innerText = showVisualHint ? v : (anagramProgress[i] || ""); da.appendChild(s);
-                    });
-                    container.appendChild(da);
-                    const inp = document.createElement('input'); inp.id='hidden-typing-input'; inp.type="text"; inp.style.position="absolute"; inp.style.opacity="0"; 
-                    inp.oninput = handleTyping; container.appendChild(inp); setTimeout(()=>inp.focus(),100);
-                    const hRow = document.createElement('div'); hRow.className = "flex gap-2 w-full mt-2";
-                    const hb = document.createElement('button'); hb.className="flex-1 bg-blue-50 p-2 rounded-lg font-bold text-[10px]"; hb.innerText="🔊 OUVIR"; hb.onclick=()=> { isHintLocked=true; speak(cur.en, 'en-US', ()=> {isHintLocked=false; render();}); };
-                    const sb = document.createElement('button'); sb.className="flex-1 bg-blue-50 p-2 rounded-lg font-bold text-[10px]"; sb.innerText="👁️ VER (2s)"; sb.onclick=()=> { isHintLocked=true; showVisualHint=true; render(); setTimeout(()=>{showVisualHint=false; isHintLocked=false; render();}, 2000); };
-                    hRow.append(hb, sb); container.appendChild(hRow);
+                    hR.append(hb, sb); container.appendChild(hR);
                 } else {
                     const os = getOptions(cur, PROVAS_DATA[currentProva].themes[currentTheme]);
                     os.forEach((o, i) => {
@@ -461,8 +472,7 @@
             }
 
             function render() {
-                if (!container) return;
-                container.innerHTML = ''; backBtn.classList.toggle('hidden', currentScreen === 'home');
+                if (!container) return; container.innerHTML = ''; backBtn.classList.toggle('hidden', currentScreen === 'home');
                 if(currentScreen==='home') renderHome(); 
                 else if(currentScreen==='themes') renderThemes(); 
                 else if(currentScreen==='vocabulary') renderVocabulary(); 
