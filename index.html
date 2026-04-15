@@ -44,12 +44,9 @@
 
         /* Badges styling */
         .badge-icon-wrapper { 
-            width: 44px; 
-            height: 44px; 
             display: flex; 
             align-items: center; 
             justify-content: center; 
-            font-size: 36px; 
         }
         .icon-locked { filter: grayscale(1); opacity: 0.3; }
         .badge-card { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 14px 10px; border-radius: 20px; background: white; border: 2px solid #edf2f7; transition: all 0.3s ease; }
@@ -136,13 +133,13 @@
             { 
                 id: "pr1", 
                 label: "Rei da Prova 1", 
-                icon: `<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-2.34"/><path d="M18 4H6v7a6 6 0 0 0 12 0V4Z"/><text x="10.5" y="11" fill="#d4af37" font-size="7" font-family="Arial" font-weight="bold" stroke-width="0">1</text></svg>`, 
+                icon: `<svg viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-2.34"/><path d="M18 4H6v7a6 6 0 0 0 12 0V4Z"/><text x="10.5" y="11" fill="#d4af37" font-size="7" font-family="Arial" font-weight="bold" stroke-width="0">1</text></svg>`, 
                 challenge: "Termine todos os níveis da Prova 1" 
             },
             { 
                 id: "pr2", 
                 label: "Rei da Prova 2", 
-                icon: `<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#3182ce" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-2.34"/><path d="M18 4H6v7a6 6 0 0 0 12 0V4Z"/><text x="10.5" y="11" fill="#3182ce" font-size="7" font-family="Arial" font-weight="bold" stroke-width="0">2</text></svg>`, 
+                icon: `<svg viewBox="0 0 24 24" fill="none" stroke="#3182ce" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-2.34"/><path d="M18 4H6v7a6 6 0 0 0 12 0V4Z"/><text x="10.5" y="11" fill="#3182ce" font-size="7" font-family="Arial" font-weight="bold" stroke-width="0">2</text></svg>`, 
                 challenge: "Termine todos os níveis da Prova 2" 
             }
         ];
@@ -152,7 +149,7 @@
             eye: `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>`,
             eyeOff: `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a10.014 10.014 0 012.183-3.883m3.66-3.66A10.001 10.001 0 0112 5c4.478 0 8.268 2.943 9.542 7a10.059 10.059 0 01-4.125 4.875M3 3l18 18M9.88 9.88a3 3 0 104.24 4.24" /></svg>`,
             sound: `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>`,
-            defaultMedal: `<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-2.34"/><path d="M18 4H6v7a6 6 0 0 0 12 0V4Z"/></svg>`
+            defaultMedal: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-2.34"/><path d="M18 4H6v7a6 6 0 0 0 12 0V4Z"/></svg>`
         };
 
         // --- 3. STATE ---
@@ -264,7 +261,6 @@
             if (lvSolved(2)) earned.add("lv2");
             if (lvSolved(3)) earned.add("lv3");
             
-            // Level 4 split
             const lv4aSolved = Object.keys(prog).some(k => !k.includes("Sentences") && !k.includes("Continuous") && prog[k].includes(4));
             const lv4pSolved = Object.keys(prog).some(k => (k.includes("Sentences") || k.includes("Continuous")) && prog[k].includes(4));
             if (lv4aSolved) earned.add("lv4a");
@@ -522,7 +518,7 @@
             bb.className = `flex items-center gap-2 bg-white border-2 p-2 rounded-xl btn-bounce ${topBadge.id !== "none" ? 'border-yellow-400' : 'border-gray-200'}`;
             bb.onclick = () => setScreen('badges');
             bb.innerHTML = `
-                <div class="badge-icon-wrapper w-8 h-8 flex items-center justify-center ${topBadge.id === "none" ? 'icon-locked' : ''}">
+                <div class="badge-icon-wrapper flex items-center justify-center ${topBadge.id === "none" ? 'icon-locked' : ''}" style="width: 22px; height: 22px; font-size: 16px;">
                     ${topBadge.icon}
                 </div>
                 <span class="text-[10px] font-bold text-gray-700">${formatText(topBadge.label)}</span>
@@ -570,7 +566,7 @@
                 card.className = `badge-card ${isEarned ? 'earned' : ''}`;
                 
                 card.innerHTML = `
-                    <div class="badge-icon-wrapper ${isEarned ? '' : 'icon-locked'} mb-2">
+                    <div class="badge-icon-wrapper ${isEarned ? '' : 'icon-locked'} mb-2" style="width: 44px; height: 44px; font-size: 32px;">
                         ${b.icon}
                     </div>
                     <div class="text-xs font-bold mb-1">${formatText(b.label)}</div>
@@ -600,7 +596,7 @@
                 if (state.onlyStar && count === 0) return;
                 const tc = document.createElement('div'); tc.className = "card p-2.5 flex justify-between items-center border-b-4 border-yellow-200 mb-1.5 active:scale-95";
                 tc.onclick = () => { state.theme = k; setScreen('levels'); };
-                tc.innerHTML = `<div class="flex flex-col"><span class="text-base font-bold">${dn}</span><span class="text-[10px] opacity-60">Nível ${maxLevel} alcançado</span></div>`;
+                tc.innerHTML = `<div class="flex flex-col"><span class="text-base font-bold">${formatText(dn)}</span><span class="text-[10px] opacity-60">Nível ${maxLevel} alcançado</span></div>`;
                 const rb = document.createElement('button'); rb.className = "text-[9px] font-bold text-blue-600 bg-blue-50 py-0.5 px-1.5 rounded-md border border-blue-100";
                 rb.innerText = formatText(`📖 ${count}`); rb.onclick = (e) => { e.stopPropagation(); state.theme = k; setScreen('vocabulary'); };
                 tc.appendChild(rb); container.appendChild(tc);
