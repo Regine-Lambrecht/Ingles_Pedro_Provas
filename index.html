@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>English Quest - Starters</title>
+    <title>Vamos estudar inglês - 4o ano</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;700&display=swap" rel="stylesheet">
     <style>
@@ -29,6 +29,7 @@
         .vocab-table td:last-child { border-right: 1px solid #e2e8f0; border-radius: 0 8px 8px 0; }
         .key-term { color: #e53e3e !important; }
         .letter-tile { min-width: 38px; height: 38px; padding: 0 8px; display: flex; align-items: center; justify-content: center; background: white; border: 2px solid #cbd5e0; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer; user-select: none; }
+        .letter-tile.disabled-option { opacity: 0.4; filter: grayscale(1); pointer-events: none; }
         .letter-slot { min-width: 30px; height: 34px; padding: 0 4px; border-bottom: 3px solid #2d3748; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1rem; margin: 0 2px; background: rgba(255,255,255,0.5); transition: all 0.2s ease; border-radius: 4px 4px 0 0; }
         .letter-slot.filled { border-bottom-color: #3182ce; background: white; }
         .letter-slot.forced { background-color: #dcfce7 !important; border: 2px solid #166534 !important; color: #14532d !important; border-radius: 6px; }
@@ -40,6 +41,19 @@
         .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: #000000; }
         input:checked + .slider:before { transform: translateX(24px); }
+
+        /* Badges styling */
+        .badge-icon-wrapper { 
+            width: 44px; 
+            height: 44px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 36px; 
+        }
+        .icon-locked { filter: grayscale(1); opacity: 0.3; }
+        .badge-card { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 14px 10px; border-radius: 20px; background: white; border: 2px solid #edf2f7; transition: all 0.3s ease; }
+        .badge-card.earned { border: 3px solid #f6ad55; background: #fffaf0; box-shadow: 0 6px 15px rgba(246, 173, 85, 0.25); transform: translateY(-2px); }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -50,6 +64,19 @@
             <h1 id="screen-title" class="text-lg font-bold text-center flex-grow">English Quest</h1>
         </div>
         <div id="main-container" class="flex-grow flex flex-col justify-start gap-2"></div>
+    </div>
+
+    <!-- Badge Alert Modal -->
+    <div id="badge-modal" class="fixed inset-0 bg-black/40 flex items-center justify-center z-[60] opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-white p-6 rounded-3xl shadow-2xl text-center max-w-[280px] border-4 border-yellow-400">
+            <div class="text-[10px] font-bold text-yellow-600 mb-1">🎉 NOVA CONQUISTA! 🎉</div>
+            <div id="modal-badge-icon" class="flex justify-center mb-2"></div>
+            <h3 id="modal-badge-name" class="text-lg font-bold mb-3"></h3>
+            <div class="flex flex-col gap-2">
+                <button id="modal-view-btn" class="bg-yellow-400 text-yellow-900 p-2.5 rounded-xl font-bold text-sm shadow-md active:scale-95">Ver minhas medalhas</button>
+                <button id="modal-close-btn" class="text-gray-500 text-xs font-bold p-1">Depois</button>
+            </div>
+        </div>
     </div>
 
     <div id="feedback" class="fixed inset-0 flex items-center justify-center pointer-events-none opacity-0 transition-opacity duration-300 z-50">
@@ -94,11 +121,38 @@
             }
         };
 
+        // --- 1.1 BADGES DATA ---
+        const BADGES_DATA = [
+            { id: "lv1", label: "Explorador de Palavras", icon: "📖", challenge: "Resolva um nível 1 (Ler Inglês)" },
+            { id: "lv2", label: "Mestre da Tradução", icon: "🔄", challenge: "Resolva um nível 2 (Traduzir para Inglês)" },
+            { id: "lv3", label: "Ouvinte de Ouro", icon: "🎧", challenge: "Resolva um nível 3 (Escutar Inglês)" },
+            { id: "lv4a", label: "Gênio das Letras", icon: "🔡", challenge: "Resolva um nível 4 (Anagrama)" },
+            { id: "lv4p", label: "Mestre dos Enigmas", icon: "🧩", challenge: "Resolva um nível 4 (Puzzle)" },
+            { id: "lv5", label: "Craque da Escrita", icon: "✍️", challenge: "Resolva um nível 5 (Escrever)" },
+            { id: "th2", label: "Duo Dinâmico", icon: "🌟", challenge: "Resolva todos os níveis em 2 temas" },
+            { id: "th3", label: "Tripla Ameaça", icon: "🔥", challenge: "Resolva todos os níveis em 3 temas" },
+            { id: "th4", label: "Busca de Diamante", icon: "💎", challenge: "Resolva todos os níveis em 4 temas" },
+            { id: "th5", label: "Sábio da Classe", icon: "🎓", challenge: "Resolva todos os níveis em 5 temas" },
+            { 
+                id: "pr1", 
+                label: "Rei da Prova 1", 
+                icon: `<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-2.34"/><path d="M18 4H6v7a6 6 0 0 0 12 0V4Z"/><text x="10.5" y="11" fill="#d4af37" font-size="7" font-family="Arial" font-weight="bold" stroke-width="0">1</text></svg>`, 
+                challenge: "Termine todos os níveis da Prova 1" 
+            },
+            { 
+                id: "pr2", 
+                label: "Rei da Prova 2", 
+                icon: `<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#3182ce" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-2.34"/><path d="M18 4H6v7a6 6 0 0 0 12 0V4Z"/><text x="10.5" y="11" fill="#3182ce" font-size="7" font-family="Arial" font-weight="bold" stroke-width="0">2</text></svg>`, 
+                challenge: "Termine todos os níveis da Prova 2" 
+            }
+        ];
+
         // --- 2. ASSETS ---
         const ICONS = {
             eye: `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>`,
             eyeOff: `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a10.014 10.014 0 012.183-3.883m3.66-3.66A10.001 10.001 0 0112 5c4.478 0 8.268 2.943 9.542 7a10.059 10.059 0 01-4.125 4.875M3 3l18 18M9.88 9.88a3 3 0 104.24 4.24" /></svg>`,
-            sound: `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>`
+            sound: `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>`,
+            defaultMedal: `<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-2.34"/><path d="M18 4H6v7a6 6 0 0 0 12 0V4Z"/></svg>`
         };
 
         // --- 3. STATE ---
@@ -127,6 +181,8 @@
             hintLocked: false,
             showVisualHint: false,
             flashIdx: -1,
+            wrongLetterAttempt: null, 
+            disabledTileIndices: [], 
             nextVisible: false,
             caps: localStorage.getItem('eq_caps') === 'true',
             onlyStar: (localStorage.getItem('eq_star') === null) ? true : localStorage.getItem('eq_star') === 'true',
@@ -198,14 +254,90 @@
             return opts;
         }
 
+        // --- 4.1 BADGE CALCULATION LOGIC ---
+        function getEarnedBadges() {
+            const earned = new Set();
+            const prog = state.progress;
+
+            const lvSolved = (x) => Object.values(prog).some(l => l.includes(x));
+            if (lvSolved(1)) earned.add("lv1");
+            if (lvSolved(2)) earned.add("lv2");
+            if (lvSolved(3)) earned.add("lv3");
+            
+            // Level 4 split
+            const lv4aSolved = Object.keys(prog).some(k => !k.includes("Sentences") && !k.includes("Continuous") && prog[k].includes(4));
+            const lv4pSolved = Object.keys(prog).some(k => (k.includes("Sentences") || k.includes("Continuous")) && prog[k].includes(4));
+            if (lv4aSolved) earned.add("lv4a");
+            if (lv4pSolved) earned.add("lv4p");
+
+            if (lvSolved(5)) earned.add("lv5");
+
+            let completeThemesCount = 0;
+            const checkThemeComplete = (prova, theme) => {
+                const list = PROVAS_DATA[prova].themes[theme];
+                const hasStar = list.some(i => i.en.startsWith('*'));
+                const isPuzzleOnly = theme.includes("Sentences") || theme.includes("Continuous");
+                const levelsNeeded = hasStar ? (isPuzzleOnly ? 4 : 5) : 3;
+                const solved = prog[`${prova}_${theme}`] || [];
+                return solved.length >= levelsNeeded;
+            };
+
+            for (const pKey in PROVAS_DATA) {
+                for (const tKey in PROVAS_DATA[pKey].themes) {
+                    if (checkThemeComplete(pKey, tKey)) completeThemesCount++;
+                }
+            }
+
+            if (completeThemesCount >= 2) earned.add("th2");
+            if (completeThemesCount >= 3) earned.add("th3");
+            if (completeThemesCount >= 4) earned.add("th4");
+            if (completeThemesCount >= 5) earned.add("th5");
+
+            const isProvaDone = (pKey) => {
+                const themes = Object.keys(PROVAS_DATA[pKey].themes);
+                return themes.every(t => checkThemeComplete(pKey, t));
+            };
+
+            if (isProvaDone("P1")) earned.add("pr1");
+            if (isProvaDone("P2")) earned.add("pr2");
+
+            return earned;
+        }
+
+        // Modal triggers
+        function showBadgeModal(badge) {
+            const modal = document.getElementById('badge-modal');
+            document.getElementById('modal-badge-icon').innerHTML = badge.icon;
+            document.getElementById('modal-badge-name').innerText = formatText(badge.label);
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            
+            document.getElementById('modal-view-btn').onclick = () => {
+                modal.classList.add('opacity-0', 'pointer-events-none');
+                setScreen('badges');
+            };
+            document.getElementById('modal-close-btn').onclick = () => {
+                modal.classList.add('opacity-0', 'pointer-events-none');
+            };
+            speak("Parabéns! Você ganhou uma nova medalha!", "pt-BR");
+        }
+
         // --- 5. PROGRESS STORAGE ---
         function saveProgress(p, t, l) {
+            const before = getEarnedBadges();
             const pk = `${p}_${t}`;
             if (!state.progress[pk]) state.progress[pk] = [];
             for (let i = 1; i <= l; i++) {
                 if (!state.progress[pk].includes(i)) state.progress[pk].push(i);
             }
             localStorage.setItem('english_quest_stars_v4', JSON.stringify(state.progress));
+            
+            const after = getEarnedBadges();
+            after.forEach(badgeId => {
+                if (!before.has(badgeId)) {
+                    const bData = BADGES_DATA.find(b => b.id === badgeId);
+                    if (bData) showBadgeModal(bData);
+                }
+            });
         }
 
         // --- 6. GAMEPLAY HELPERS ---
@@ -223,19 +355,36 @@
             const target = state.questionList[state.idx].en.replace(/^\*/, '');
             const isS = state.theme.includes("Sentences") || state.theme.includes("Continuous");
             const targetArr = isS ? target.split(' ') : target.split('');
+            
             if (item === targetArr[state.anagramProgress.length]) {
-                state.anagramProgress.push(item); state.anagramPool.splice(idx, 1); state.wrongPerPos = 0; 
+                state.anagramProgress.push(item); 
+                state.anagramPool.splice(idx, 1); 
+                state.wrongPerPos = 0; 
+                state.disabledTileIndices = []; 
                 checkPuzzleComplete(); 
-                if (!state.finished) updateSlotsOnly(targetArr); else render();
+                render(); 
             } else {
                 state.wrongPerPos++;
+                state.disabledTileIndices.push(idx); 
+                state.wrongLetterAttempt = item;
+                state.flashIdx = state.anagramProgress.length;
+                render(); 
+                setTimeout(() => {
+                    state.wrongLetterAttempt = null;
+                    state.flashIdx = -1;
+                    render();
+                }, 1000);
+
                 if (state.wrongPerPos >= 2) {
                     state.forcedIndices.push(state.anagramProgress.length);
                     const val = targetArr[state.anagramProgress.length];
                     state.anagramProgress.push(val);
                     const pIdx = state.anagramPool.indexOf(val); if (pIdx !== -1) state.anagramPool.splice(pIdx, 1);
-                    state.wrongPerPos = 0; checkPuzzleComplete(); if (!state.finished) updateSlotsOnly(targetArr); else render();
-                } else { state.flashIdx = state.anagramProgress.length; updateSlotsOnly(targetArr); setTimeout(()=>{state.flashIdx=-1; updateSlotsOnly(targetArr);},300); }
+                    state.wrongPerPos = 0; 
+                    state.disabledTileIndices = []; 
+                    checkPuzzleComplete(); 
+                    render();
+                }
             }
         }
 
@@ -243,35 +392,33 @@
             if (state.finished || state.hintLocked || state.level !== 5) return;
             const target = state.questionList[state.idx].en.replace(/^\*/,'').toLowerCase();
             const val = e.target.value.toLowerCase();
+            
             if (val.length > state.anagramProgress.length) {
                 const typed = val[val.length-1], req = target[state.anagramProgress.length];
                 if (typed === req) {
                     state.anagramProgress.push(typed); state.wrongPerPos = 0;
                     if (state.anagramProgress.length === target.length) checkPuzzleComplete();
-                    if (!state.finished) updateSlotsOnly(target.split('')); else render();
+                    render();
                 } else {
                     state.wrongPerPos++;
+                    state.wrongLetterAttempt = typed;
+                    state.flashIdx = state.anagramProgress.length;
+                    render();
+                    setTimeout(() => { 
+                        state.wrongLetterAttempt = null; 
+                        state.flashIdx = -1; 
+                        render(); 
+                    }, 1000);
+                    
                     if (state.wrongPerPos >= 2) {
                         state.forcedIndices.push(state.anagramProgress.length);
                         state.anagramProgress.push(req); state.wrongPerPos = 0;
                         if (state.anagramProgress.length === target.length) checkPuzzleComplete();
-                        if (!state.finished) updateSlotsOnly(target.split('')); else render();
-                    } else { state.flashIdx = state.anagramProgress.length; updateSlotsOnly(target.split('')); setTimeout(()=>{state.flashIdx=-1; updateSlotsOnly(target.split(''));},300); }
+                        render();
+                    }
                 }
             }
-        }
-
-        function updateSlotsOnly(targetArr) {
-            const wrap = container.querySelector('.slots-container');
-            if (!wrap) return;
-            const slots = wrap.querySelectorAll('.letter-slot');
-            targetArr.forEach((_, i) => {
-                const s = slots[i];
-                if (s) {
-                    s.innerText = state.anagramProgress[i] || "";
-                    s.className = `letter-slot ${state.forcedIndices.includes(i)?'forced':''} ${state.anagramProgress[i]?'filled':''} ${i === state.flashIdx ? 'error-flash' : ''}`;
-                }
-            });
+            e.target.value = state.anagramProgress.join('');
         }
 
         function checkPuzzleComplete() {
@@ -280,7 +427,10 @@
             const isS = state.theme.includes("Sentences") || state.theme.includes("Continuous");
             const tLen = isS && state.level === 4 ? clean.split(' ').length : clean.length;
             if (state.anagramProgress.length === tLen) {
-                state.finished = true; speak(cur.en);
+                state.finished = true;
+                state.anagramPool = []; 
+                state.disabledTileIndices = [];
+                speak(cur.en);
                 if (state.forcedIndices.length > 0) state.redoList.push(cur); else state.starPerfectCount++;
                 setTimeout(() => { state.nextVisible = true; render(); }, 1000);
             }
@@ -315,7 +465,7 @@
         }
 
         function playQuestion() {
-            state.finished = false; state.attemptCount = 0; state.wrongIndices = []; state.anagramProgress = []; state.forcedIndices = []; state.showVisualHint = false; state.nextVisible = false; state.flashIdx = -1; window._opts = null;
+            state.finished = false; state.attemptCount = 0; state.wrongIndices = []; state.anagramProgress = []; state.forcedIndices = []; state.showVisualHint = false; state.nextVisible = false; state.flashIdx = -1; state.disabledTileIndices = []; state.wrongLetterAttempt = null; window._opts = null;
             const cur = state.questionList[state.idx]; if (!cur) return;
             const clean = cur.en.replace(/^\*/, '');
             if ((state.theme.includes("Sentences") || state.theme.includes("Continuous")) && state.level === 4) { state.anagramPool = clean.split(' '); shuffle(state.anagramPool); }
@@ -328,6 +478,7 @@
             if (state.screen === 'vocabulary') setScreen('themes');
             else if (state.screen === 'levels') setScreen('themes');
             else if (state.screen === 'themes') setScreen('home');
+            else if (state.screen === 'badges') setScreen('home');
             else if (state.screen === 'game' || state.screen === 'finish') setScreen('levels');
             else setScreen('home');
         };
@@ -352,13 +503,40 @@
         }
 
         function renderHome() {
-            container.innerHTML = ''; screenTitle.innerText = formatText("Vamos estudar inglês - 4");
-            const hr = document.createElement('div'); hr.className = "flex justify-end mb-4 w-full";
+            container.innerHTML = ''; screenTitle.innerText = formatText("Vamos estudar inglês - 4o ano");
+            
+            const ha = document.createElement('div'); ha.className = "flex justify-between items-center mb-4 w-full";
+            
+            const earned = getEarnedBadges();
+            let topBadge = { id: "none", label: "Ganhe medalhas!", icon: ICONS.defaultMedal };
+            if (earned.size > 0) {
+                for (let i = BADGES_DATA.length - 1; i >= 0; i--) {
+                    if (earned.has(BADGES_DATA[i].id)) {
+                        topBadge = BADGES_DATA[i];
+                        break;
+                    }
+                }
+            }
+
+            const bb = document.createElement('button');
+            bb.className = `flex items-center gap-2 bg-white border-2 p-2 rounded-xl btn-bounce ${topBadge.id !== "none" ? 'border-yellow-400' : 'border-gray-200'}`;
+            bb.onclick = () => setScreen('badges');
+            bb.innerHTML = `
+                <div class="badge-icon-wrapper w-8 h-8 flex items-center justify-center ${topBadge.id === "none" ? 'icon-locked' : ''}">
+                    ${topBadge.icon}
+                </div>
+                <span class="text-[10px] font-bold text-gray-700">${formatText(topBadge.label)}</span>
+            `;
+            ha.appendChild(bb);
+
             const cb = document.createElement('button');
             cb.className = `p-2.5 rounded-xl font-bold border-2 transition-all btn-bounce text-xs ${state.caps ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white border-gray-300 text-gray-500'}`;
-            cb.innerText = formatText("Apenas maiúsculas");
+            cb.innerText = state.caps ? "Abc" : "ABC";
             cb.onclick = () => { state.caps = !state.caps; localStorage.setItem('eq_caps', state.caps); render(); };
-            hr.appendChild(cb); container.appendChild(hr);
+            ha.appendChild(cb);
+            
+            container.appendChild(ha);
+
             Object.keys(PROVAS_DATA).forEach(p => {
                 const isP2 = (p === "P2"), isDone = !isP2 || checkP1MainCompletion();
                 const b = document.createElement('button'); b.className = `card p-4 text-xl font-bold mb-2 ${!isDone ? 'locked bg-gray-100' : 'bg-white border-b-4 border-blue-200'}`;
@@ -371,6 +549,42 @@
                 };
                 container.appendChild(b);
             });
+        }
+
+        function renderBadges() {
+            container.innerHTML = ''; screenTitle.innerText = formatText("Minhas medalhas");
+            
+            const desc = document.createElement('p');
+            desc.className = "text-center text-gray-600 text-sm italic mb-4";
+            desc.innerText = "Enfrente desafios e ganhe medalhas";
+            container.appendChild(desc);
+
+            const earned = getEarnedBadges();
+
+            const grid = document.createElement('div');
+            grid.className = "grid grid-cols-2 gap-3 pb-4";
+
+            BADGES_DATA.forEach(b => {
+                const isEarned = earned.has(b.id);
+                const card = document.createElement('div');
+                card.className = `badge-card ${isEarned ? 'earned' : ''}`;
+                
+                card.innerHTML = `
+                    <div class="badge-icon-wrapper ${isEarned ? '' : 'icon-locked'} mb-2">
+                        ${b.icon}
+                    </div>
+                    <div class="text-xs font-bold mb-1">${formatText(b.label)}</div>
+                    <div class="text-[9px] opacity-70 leading-tight">${formatText(b.challenge)}</div>
+                `;
+                grid.appendChild(card);
+            });
+
+            container.appendChild(grid);
+            const back = document.createElement('button');
+            back.className = "w-full bg-blue-600 text-white p-3 rounded-lg font-bold shadow-lg mt-2";
+            back.innerText = formatText("Voltar");
+            back.onclick = () => setScreen('home');
+            container.appendChild(back);
         }
 
         function renderThemes() {
@@ -440,11 +654,24 @@
 
         function renderLevels() {
             container.innerHTML = ''; screenTitle.innerText = state.theme;
-            const lvls = [{id:1,t:"Nível 1",s:"En → Pt"},{id:2,t:"Nível 2",s:"Pt → En"},{id:3,t:"Nível 3",s:"🎧 Só Áudio"}];
-            if (PROVAS_DATA[state.prova].themes[state.theme].some(i => i.en.startsWith('*'))) {
-                if (state.theme.includes("Sentences") || state.theme.includes("Continuous")) lvls.push({id:4,t:"Nível 4",s:"🧩 Puzzle (*)"});
-                else lvls.push({id:4,t:"Nível 4",s:"🧩 Anagrama (*)"}, {id:5,t:"Nível 5",s:"⌨️ Escrever (*)"});
+            const lvls = [
+                {id:1,t:"Nível 1",s:"Ler Inglês"},
+                {id:2,t:"Nível 2",s:"Traduzir para Inglês"},
+                {id:3,t:"Nível 3",s:"Escutar Inglês"}
+            ];
+            
+            const hasStar = PROVAS_DATA[state.prova].themes[state.theme].some(i => i.en.startsWith('*'));
+            if (hasStar) {
+                if (state.theme.includes("Sentences") || state.theme.includes("Continuous")) {
+                    lvls.push({id:4,t:"Nível 4",s:"Puzzle (*)"});
+                } else {
+                    lvls.push(
+                        {id:4,t:"Nível 4",s:"Anagrama (*)"}, 
+                        {id:5,t:"Nível 5",s:"Escrever (*)"}
+                    );
+                }
             }
+            
             const done = state.progress[`${state.prova}_${state.theme}`] || [];
             lvls.forEach((l, idx) => {
                 const isC = done.includes(l.id);
@@ -473,28 +700,41 @@
                 const targetArr = (isS && isP) ? cur.en.replace(/^\*/,'').split(' ') : cur.en.replace(/^\*/,'').split('');
                 const da = document.createElement('div'); da.className = "flex justify-center mb-3 flex-wrap gap-1 slots-container";
                 targetArr.forEach((val, i) => {
+                    const isFlashed = i === state.flashIdx;
                     const s = document.createElement('div');
-                    s.className = `letter-slot ${state.forcedIndices.includes(i)?'forced':''} ${state.anagramProgress[i]||state.showVisualHint?'filled':''} ${i === state.flashIdx ? 'error-flash' : ''}`;
-                    s.innerText = state.showVisualHint ? val : (state.anagramProgress[i] || ""); da.appendChild(s);
+                    s.className = `letter-slot ${state.forcedIndices.includes(i)?'forced':''} ${state.anagramProgress[i]||state.showVisualHint?'filled':''} ${isFlashed ? 'error-flash' : ''}`;
+                    s.innerText = isFlashed ? formatText(state.wrongLetterAttempt) : (state.showVisualHint ? formatText(val) : formatText(state.anagramProgress[i] || "")); 
+                    da.appendChild(s);
                 });
                 container.appendChild(da);
-                if (isP) {
+                if (isP && !state.finished) { 
                     const lg = document.createElement('div'); lg.className = "flex justify-center flex-wrap gap-2 mb-2";
                     state.anagramPool.forEach((item, i) => {
-                        const b = document.createElement('div'); b.className = "letter-tile shadow-md btn-bounce";
-                        b.innerText = item.toUpperCase(); b.onclick = () => handleAnagramClick(item, i); lg.appendChild(b);
+                        const isTileDisabled = state.disabledTileIndices.includes(i);
+                        const b = document.createElement('div'); 
+                        b.className = `letter-tile shadow-md btn-bounce ${isTileDisabled ? 'disabled-option' : ''}`;
+                        b.innerText = item.toUpperCase(); 
+                        if (!isTileDisabled) b.onclick = () => handleAnagramClick(item, i); 
+                        lg.appendChild(b);
                     });
                     container.appendChild(lg);
-                } else {
+                } else if (!isP && !state.finished) {
                     const inp = document.createElement('input'); inp.id='hidden-typing-input'; inp.type="text"; inp.style.position="absolute"; inp.style.opacity="0"; 
                     inp.value = state.anagramProgress.join(''); inp.oninput = handleTyping; container.appendChild(inp); setTimeout(()=>inp.focus(),100);
                 }
+                
                 const hRow = document.createElement('div'); hRow.className = "flex gap-2 w-full mt-2";
                 const hb = document.createElement('button'); hb.className="flex-1 bg-blue-50 p-2 rounded-lg font-bold text-[10px]"; hb.innerText="🔊 OUVIR"; 
                 hb.onclick=()=> { state.hintLocked=true; speak(cur.en, 'en-US', ()=> {state.hintLocked=false; render();}); };
-                const sb = document.createElement('button'); sb.className="flex-1 bg-blue-50 p-2 rounded-lg font-bold text-[10px]"; sb.innerText="👁️ VER (2s)"; 
-                sb.onclick=()=> { state.hintLocked=true; state.showVisualHint=true; render(); setTimeout(()=>{state.showVisualHint=false; state.hintLocked=false; render();}, 2000); };
+                
+                const sb = document.createElement('button'); 
+                sb.className=`flex-1 p-2 rounded-lg font-bold text-[10px] ${state.finished ? 'opacity-30 cursor-not-allowed bg-gray-200' : 'bg-blue-50'}`; 
+                sb.innerText="👁️ VER (2s)"; 
+                if (!state.finished) {
+                    sb.onclick=()=> { state.hintLocked=true; state.showVisualHint=true; render(); setTimeout(()=>{state.showVisualHint=false; state.hintLocked=false; render();}, 2000); };
+                }
                 hRow.append(hb, sb); container.appendChild(hRow);
+                
             } else {
                 const os = getOptions(cur, PROVAS_DATA[state.prova].themes[state.theme]);
                 os.forEach((o, i) => {
@@ -528,6 +768,7 @@
             else if(state.screen==='vocabulary') renderVocabulary(); 
             else if(state.screen==='levels') renderLevels(); 
             else if(state.screen==='game') renderGame(); 
+            else if(state.screen==='badges') renderBadges();
             else if(state.screen==='finish') {
                 container.innerHTML = `<div class="card p-6 text-center flex flex-col gap-3"><div class="text-4xl">🏆</div><h2 class="text-xl font-bold">${formatText("Incrível!")}</h2><p>${formatText("Nível concluído!")}</p><button class="bg-blue-600 text-white p-3 rounded-lg font-bold" id="cont-btn">${formatText("Continuar")}</button></div>`;
                 container.querySelector('#cont-btn').onclick = () => setScreen('levels');
