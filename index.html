@@ -48,8 +48,8 @@
             align-items: center; 
             justify-content: center; 
         }
-        .icon-locked { filter: grayscale(1); opacity: 0.3; }
-        .badge-card { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 14px 10px; border-radius: 20px; background: white; border: 2px solid #edf2f7; transition: all 0.3s ease; }
+        .icon-locked { filter: grayscale(1); opacity: 0.4; }
+        .badge-card { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 14px 10px; border-radius: 20px; background: white; border: 2px solid #edf2f7; transition: all 0.3s ease; height: 100%; }
         .badge-card.earned { border: 3px solid #f6ad55; background: #fffaf0; box-shadow: 0 6px 15px rgba(246, 173, 85, 0.25); transform: translateY(-2px); }
     </style>
 </head>
@@ -58,7 +58,7 @@
     <div id="app" class="flex-grow flex flex-col p-2 max-w-md mx-auto w-full">
         <div id="header" class="flex items-center justify-between mb-2">
             <button id="back-btn" class="hidden text-blue-600 font-bold py-1 px-3 rounded-full border-2 border-blue-600 bg-white text-base">←</button>
-            <h1 id="screen-title" class="text-lg font-bold text-center flex-grow">English Quest</h1>
+            <h1 id="screen-title" class="text-lg font-bold text-center flex-grow flex items-center justify-center gap-1.5">English Quest</h1>
         </div>
         <div id="main-container" class="flex-grow flex flex-col justify-start gap-2"></div>
     </div>
@@ -88,7 +88,7 @@
             "P1": {
                 order: ["Family", "Numbers", "Adjectives", "Body", "Verbs", "Other", "Present Continuous", "Sentences", "Animals", "Clothes", "Job"],
                 themes: {
-                    "Family": [{en:"*Grandparents",pt:"Avós"},{en:"*Uncle",pt:"Tio"},{en:"*Parents",pt:"Pais"},{en:"*Aunt",pt:"Tia"},{en:"Sister",pt:"Irmã"},{en:"Brother",pt:"Irmão"},{en:"*Son",pt:"Filho"},{en:"*Grandson",pt:"Neto"},{en:"*Daughter",pt:"Filha"},{en:"*Granddaughter",pt:"Neta"},{en:"Grandma",pt:"Vovó"},{en:"Grandpa",pt:"Vovô"},{en:"Mother",pt:"Mãe"},{en:"Father",pt:"Pai"},{en:"Dad",pt:"Papai"},{en:"Mum",pt:"Mamãe"},{en:"Cousin",pt:"Primo/Prima"},{en:"Wife",pt:"Esposa"}],
+                    "Family": [{en:"*Grandparents",pt:"Avós"},{en:"*Uncle",pt:"Tio"},{en:"*Parents",pt:"Pais"},{en:"*Aunt",pt:"Tia"},{en:"Sister",pt:"Irmã"},{en:"Brother",pt:"Irmão"},{en:"*Son",pt:"Filho"},{en:"*Grandson",pt:"Neto"},{en:"*Daughter",pt:"Filha"},{en:"*Grandson",pt:"Neto"},{en:"*Granddaughter",pt:"Neta"},{en:"Grandma",pt:"Vovó"},{en:"Grandpa",pt:"Vovô"},{en:"Mother",pt:"Mãe"},{en:"Father",pt:"Pai"},{en:"Dad",pt:"Papai"},{en:"Mum",pt:"Mamãe"},{en:"Cousin",pt:"Primo/Prima"},{en:"Wife",pt:"Esposa"}],
                     "Numbers": [{en:"*One",pt:"1"},{en:"*Two",pt:"2"},{en:"*Three",pt:"3"},{en:"*Four",pt:"4"},{en:"*Five",pt:"5"},{en:"*Six",pt:"6"},{en:"*Seven",pt:"7"},{en:"*Eight",pt:"8"},{en:"*Nine",pt:"9"},{en:"*Ten",pt:"10"},{en:"*Eleven",pt:"11"},{en:"*Twelve",pt:"12"},{en:"*Thirteen",pt:"13"},{en:"*Fourteen",pt:"14"},{en:"*Fifteen",pt:"15"},{en:"*Sixteen",pt:"16"},{en:"*Seventeen",pt:"17"},{en:"*Eighteen",pt:"18"},{en:"*Nineteen",pt:"19"},{en:"*Twenty",pt:"20"},{en:"*Thirty",pt:"30"},{en:"*Forty",pt:"40"},{en:"*Fifty",pt:"50"},{en:"*Sixty",pt:"60"},{en:"*Seventy",pt:"70"},{en:"*Eighty",pt:"80"},{en:"*Ninety",pt:"90"},{en:"*One hundred",pt:"100"}],
                     "Adjectives": [{en:"Favourite",pt:"Favorito"},{en:"Big",pt:"Grande"},{en:"Old",pt:"Velho"},{en:"Small",pt:"Pequeno"},{en:"Fat",pt:"Gordo"},{en:"New",pt:"Novo"},{en:"Happy",pt:"Feliz"},{en:"*Quiet",pt:"Quieto"},{en:"*Clever",pt:"Esperto"},{en:"Beautiful",pt:"Bonito"},{en:"*Straight",pt:"Liso"},{en:"*Funny",pt:"Engraçado"},{en:"*Curly",pt:"Cacheado"},{en:"*Naughty",pt:"Malcriado"},{en:"Dirty",pt:"Sujo"},{en:"*Fair",pt:"Loiro"},{en:"*Purple",pt:"Roxo"},{en:"*Pink",pt:"Rosa"},{en:"*Green",pt:"Verde"},{en:"*Black",pt:"Preto"},{en:"*White",pt:"Branco"},{en:"*Blue",pt:"Azul"},{en:"*Grey",pt:"Cinza"},{en:"*Orange",pt:"Laranja"},{en:"*Red",pt:"Vermelho"},{en:"*Yellow",pt:"Amarelo"},{en:"*Smart",pt:"Esperto"},{en:"Tall",pt:"Alto"},{en:"Long",pt:"Comprido"},{en:"Wide",pt:"Largo"}],
                     "Body": [{en:"Eye",pt:"Olho"},{en:"*Hair",pt:"Cabelo"},{en:"*Beard",pt:"Barba"},{en:"*Moustache",pt:"Bigode"},{en:"Foot",pt:"Pé"},{en:"Finger",pt:"Dedo da mão"},{en:"Toe",pt:"Dedo do pé"},{en:"Hand",pt:"Mão"}],
@@ -126,6 +126,9 @@
             { id: "lv4a", label: "Gênio das Letras", icon: "🔡", challenge: "Resolva um nível 4 (Anagrama)" },
             { id: "lv4p", label: "Mestre dos Enigmas", icon: "🧩", challenge: "Resolva um nível 4 (Puzzle)" },
             { id: "lv5", label: "Craque da Escrita", icon: "✍️", challenge: "Resolva um nível 5 (Escrever)" },
+            { id: "pts50", label: "Aspirante a Mestre", icon: "🥉🎯", challenge: "Resolva 50 questões corretamente" },
+            { id: "pts120", label: "Veterano do Inglês", icon: "🥈🎯", challenge: "Resolva 120 questões corretamente" },
+            { id: "pts300", label: "Centurião da Língua", icon: "🥇🎯", challenge: "Resolva 300 questões corretamente" },
             { id: "th2", label: "Duo Dinâmico", icon: "🌟", challenge: "Resolva todos os níveis em 2 temas" },
             { id: "th3", label: "Tripla Ameaça", icon: "🔥", challenge: "Resolva todos os níveis em 3 temas" },
             { id: "th4", label: "Busca de Diamante", icon: "💎", challenge: "Resolva todos os níveis em 4 temas" },
@@ -159,6 +162,7 @@
 
         const state = {
             progress: JSON.parse(localStorage.getItem('english_quest_stars_v4')) || {}, 
+            totalQuestionsSolved: parseInt(localStorage.getItem('eq_points')) || 0,
             screen: 'home',
             prova: null,
             theme: null,
@@ -185,7 +189,8 @@
             onlyStar: (localStorage.getItem('eq_star') === null) ? true : localStorage.getItem('eq_star') === 'true',
             vocabStar: true,
             vocabHiddenCol: 'none',
-            revealed: new Set()
+            revealed: new Set(),
+            badgeQueue: []
         };
 
         // --- 4. UTILS ---
@@ -229,6 +234,28 @@
             return true;
         }
 
+        // Migration logic for old players
+        function migrateOldProgressToPoints() {
+            if (localStorage.getItem('eq_points_migrated')) return;
+            let total = 0;
+            Object.keys(state.progress).forEach(key => {
+                const parts = key.split('_');
+                const prova = parts[0];
+                const theme = parts.slice(1).join('_');
+                if (PROVAS_DATA[prova] && PROVAS_DATA[prova].themes[theme]) {
+                    const mainWordsCount = PROVAS_DATA[prova].themes[theme].filter(w => w.en.startsWith('*')).length;
+                    const levelsReached = state.progress[key].length;
+                    total += (mainWordsCount * levelsReached);
+                }
+            });
+            if (total > 0) {
+                state.totalQuestionsSolved = total;
+                localStorage.setItem('eq_points', total);
+            }
+            localStorage.setItem('eq_points_migrated', 'true');
+        }
+        migrateOldProgressToPoints();
+
         function getOptions(cur, pool) {
             if (window._opts && window._id === state.idx) return window._opts;
             let opts = [cur];
@@ -255,6 +282,7 @@
         function getEarnedBadges() {
             const earned = new Set();
             const prog = state.progress;
+            const pts = state.totalQuestionsSolved;
 
             const lvSolved = (x) => Object.values(prog).some(l => l.includes(x));
             if (lvSolved(1)) earned.add("lv1");
@@ -267,6 +295,11 @@
             if (lv4pSolved) earned.add("lv4p");
 
             if (lvSolved(5)) earned.add("lv5");
+
+            // Point medals
+            if (pts >= 50) earned.add("pts50");
+            if (pts >= 120) earned.add("pts120");
+            if (pts >= 300) earned.add("pts300");
 
             let completeThemesCount = 0;
             const checkThemeComplete = (prova, theme) => {
@@ -300,8 +333,14 @@
             return earned;
         }
 
-        // Modal triggers
-        function showBadgeModal(badge) {
+        function processBadgeQueue() {
+            if (state.badgeQueue.length === 0) return;
+            const badgeId = state.badgeQueue[0];
+            const badge = BADGES_DATA.find(b => b.id === badgeId);
+            if (badge) showBadgeModalUI(badge);
+        }
+
+        function showBadgeModalUI(badge) {
             const modal = document.getElementById('badge-modal');
             document.getElementById('modal-badge-icon').innerHTML = badge.icon;
             document.getElementById('modal-badge-name').innerText = formatText(badge.label);
@@ -309,12 +348,20 @@
             
             document.getElementById('modal-view-btn').onclick = () => {
                 modal.classList.add('opacity-0', 'pointer-events-none');
+                state.badgeQueue = []; 
                 setScreen('badges');
             };
             document.getElementById('modal-close-btn').onclick = () => {
                 modal.classList.add('opacity-0', 'pointer-events-none');
+                state.badgeQueue.shift(); 
+                setTimeout(processBadgeQueue, 300); 
             };
             speak("Parabéns! Você ganhou uma nova medalha!", "pt-BR");
+        }
+
+        function addSolvedPoint() {
+            state.totalQuestionsSolved++;
+            localStorage.setItem('eq_points', state.totalQuestionsSolved);
         }
 
         // --- 5. PROGRESS STORAGE ---
@@ -330,10 +377,10 @@
             const after = getEarnedBadges();
             after.forEach(badgeId => {
                 if (!before.has(badgeId)) {
-                    const bData = BADGES_DATA.find(b => b.id === badgeId);
-                    if (bData) showBadgeModal(bData);
+                    state.badgeQueue.push(badgeId);
                 }
             });
+            processBadgeQueue();
         }
 
         // --- 6. GAMEPLAY HELPERS ---
@@ -427,6 +474,7 @@
                 state.anagramPool = []; 
                 state.disabledTileIndices = [];
                 speak(cur.en);
+                if (state.forcedIndices.length === 0) addSolvedPoint();
                 if (state.forcedIndices.length > 0) state.redoList.push(cur); else state.starPerfectCount++;
                 setTimeout(() => { state.nextVisible = true; render(); }, 1000);
             }
@@ -436,7 +484,11 @@
             if (state.finished) return;
             state.attemptCount++;
             if (sel.en === cor.en) {
-                state.finished = true; if (state.attemptCount === 1) state.starPerfectCount++;
+                state.finished = true; 
+                if (state.attemptCount === 1) {
+                    state.starPerfectCount++;
+                    addSolvedPoint();
+                }
                 showFeedback(formatText("Incrível! 🌟"), "#48bb78"); speak("Well done"); triggerReview(cor);
             } else {
                 state.wrongIndices.push(idx);
@@ -501,11 +553,21 @@
         function renderHome() {
             container.innerHTML = ''; screenTitle.innerText = formatText("Vamos estudar inglês - 4o ano");
             
-            const ha = document.createElement('div'); ha.className = "flex justify-between items-center mb-4 w-full";
+            const ha = document.createElement('div'); ha.className = "flex justify-between items-center mb-4 w-full gap-2 px-1";
             
             const earned = getEarnedBadges();
             let topBadge = { id: "none", label: "Ganhe medalhas!", icon: ICONS.defaultMedal };
-            if (earned.size > 0) {
+            
+            const ptMedals = ["pts300", "pts120", "pts50"];
+            let foundTop = false;
+            for (const mId of ptMedals) {
+                if (earned.has(mId)) {
+                    topBadge = BADGES_DATA.find(b => b.id === mId);
+                    foundTop = true;
+                    break;
+                }
+            }
+            if (!foundTop && earned.size > 0) {
                 for (let i = BADGES_DATA.length - 1; i >= 0; i--) {
                     if (earned.has(BADGES_DATA[i].id)) {
                         topBadge = BADGES_DATA[i];
@@ -515,22 +577,25 @@
             }
 
             const bb = document.createElement('button');
-            bb.className = `flex items-center gap-2 bg-white border-2 p-2 rounded-xl btn-bounce ${topBadge.id !== "none" ? 'border-yellow-400' : 'border-gray-200'}`;
+            bb.className = `flex items-center gap-1.5 bg-blue-600 text-white border-2 p-1.5 px-2 rounded-xl btn-bounce shadow-md shrink-0 h-10 ${topBadge.id !== "none" ? 'border-yellow-400' : 'border-blue-700'}`;
             bb.onclick = () => setScreen('badges');
             bb.innerHTML = `
-                <div class="badge-icon-wrapper flex items-center justify-center ${topBadge.id === "none" ? 'icon-locked' : ''}" style="width: 22px; height: 22px; font-size: 16px;">
+                <div class="badge-icon-wrapper flex items-center justify-center -translate-y-[1px] ${topBadge.id === "none" ? 'icon-locked' : ''}" style="width: 18px; height: 18px; font-size: 14px;">
                     ${topBadge.icon}
                 </div>
-                <span class="text-[10px] font-bold text-gray-700">${formatText(topBadge.label)}</span>
+                <span class="text-[9px] font-bold leading-tight">${formatText(topBadge.label)}</span>
             `;
-            ha.appendChild(bb);
+            
+            const counterDiv = document.createElement('div');
+            counterDiv.className = "bg-white text-gray-700 border-2 border-gray-200 px-3 rounded-full font-bold text-xs flex items-center justify-center gap-1 shrink-0 h-10";
+            counterDiv.innerHTML = `<span>🎯</span><span>${state.totalQuestionsSolved}</span>`;
 
             const cb = document.createElement('button');
-            cb.className = `p-2.5 rounded-xl font-bold border-2 transition-all btn-bounce text-xs ${state.caps ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white border-gray-300 text-gray-500'}`;
+            cb.className = `px-3 rounded-xl font-bold border-2 transition-all btn-bounce text-xs shrink-0 bg-blue-600 border-blue-700 text-white shadow-md h-10`;
             cb.innerText = state.caps ? "Abc" : "ABC";
             cb.onclick = () => { state.caps = !state.caps; localStorage.setItem('eq_caps', state.caps); render(); };
-            ha.appendChild(cb);
             
+            ha.append(bb, counterDiv, cb);
             container.appendChild(ha);
 
             Object.keys(PROVAS_DATA).forEach(p => {
@@ -549,14 +614,12 @@
 
         function renderBadges() {
             container.innerHTML = ''; screenTitle.innerText = formatText("Minhas medalhas");
-            
             const desc = document.createElement('p');
-            desc.className = "text-center text-gray-600 text-sm italic mb-4";
+            desc.className = "text-center text-gray-600 text-sm italic mb-4 px-2";
             desc.innerText = "Enfrente desafios e ganhe medalhas";
             container.appendChild(desc);
 
             const earned = getEarnedBadges();
-
             const grid = document.createElement('div');
             grid.className = "grid grid-cols-2 gap-3 pb-4";
 
@@ -565,9 +628,20 @@
                 const card = document.createElement('div');
                 card.className = `badge-card ${isEarned ? 'earned' : ''}`;
                 
+                let iconContent = b.icon;
+                const isPointBadge = b.id.startsWith('pts');
+
+                if (isPointBadge) {
+                    // Split the string (e.g. "🥉🎯") correctly into emojis
+                    const parts = [...b.icon];
+                    const medalPart = parts[0] || '';
+                    const targetPart = parts[1] || '';
+                    iconContent = `<span>${medalPart}</span><span class="inline-block -translate-y-2.5 ml-[-8px] scale-[0.85]">${targetPart}</span>`;
+                }
+
                 card.innerHTML = `
                     <div class="badge-icon-wrapper ${isEarned ? '' : 'icon-locked'} mb-2" style="width: 44px; height: 44px; font-size: 32px;">
-                        ${b.icon}
+                        ${iconContent}
                     </div>
                     <div class="text-xs font-bold mb-1">${formatText(b.label)}</div>
                     <div class="text-[9px] opacity-70 leading-tight">${formatText(b.challenge)}</div>
@@ -650,24 +724,12 @@
 
         function renderLevels() {
             container.innerHTML = ''; screenTitle.innerText = state.theme;
-            const lvls = [
-                {id:1,t:"Nível 1",s:"Ler Inglês"},
-                {id:2,t:"Nível 2",s:"Traduzir para Inglês"},
-                {id:3,t:"Nível 3",s:"Escutar Inglês"}
-            ];
-            
+            const lvls = [{id:1,t:"Nível 1",s:"Ler Inglês"},{id:2,t:"Nível 2",s:"Traduzir para Inglês"},{id:3,t:"Nível 3",s:"Escutar Inglês"}];
             const hasStar = PROVAS_DATA[state.prova].themes[state.theme].some(i => i.en.startsWith('*'));
             if (hasStar) {
-                if (state.theme.includes("Sentences") || state.theme.includes("Continuous")) {
-                    lvls.push({id:4,t:"Nível 4",s:"Puzzle (*)"});
-                } else {
-                    lvls.push(
-                        {id:4,t:"Nível 4",s:"Anagrama (*)"}, 
-                        {id:5,t:"Nível 5",s:"Escrever (*)"}
-                    );
-                }
+                if (state.theme.includes("Sentences") || state.theme.includes("Continuous")) lvls.push({id:4,t:"Nível 4",s:"Puzzle (*)"});
+                else lvls.push({id:4,t:"Nível 4",s:"Anagrama (*)"}, {id:5,t:"Nível 5",s:"Escrever (*)"});
             }
-            
             const done = state.progress[`${state.prova}_${state.theme}`] || [];
             lvls.forEach((l, idx) => {
                 const isC = done.includes(l.id);
@@ -681,7 +743,10 @@
 
         function renderGame() {
             container.innerHTML = ''; const cur = state.questionList[state.idx]; if (!cur) return;
-            screenTitle.innerText = state.level >= 4 ? `${state.starPerfectCount}/${state.totalStarWords}` : `${state.idx+1}/${state.questionList.length}`;
+            
+            const progressStr = state.level >= 4 ? `${state.starPerfectCount}/${state.totalStarWords}` : `${state.idx+1}/${state.questionList.length}`;
+            screenTitle.innerHTML = `<span>🎯</span><span>${progressStr}</span>`;
+            
             const pc = document.createElement('div'); pc.className = "card-inverted p-3 flex flex-col items-center justify-center mb-2 min-h-[70px]";
             if (state.level === 3) {
                 const b = document.createElement('button'); b.className = "text-3xl p-2 bg-gray-800 rounded-full";
@@ -718,11 +783,9 @@
                     const inp = document.createElement('input'); inp.id='hidden-typing-input'; inp.type="text"; inp.style.position="absolute"; inp.style.opacity="0"; 
                     inp.value = state.anagramProgress.join(''); inp.oninput = handleTyping; container.appendChild(inp); setTimeout(()=>inp.focus(),100);
                 }
-                
                 const hRow = document.createElement('div'); hRow.className = "flex gap-2 w-full mt-2";
                 const hb = document.createElement('button'); hb.className="flex-1 bg-blue-50 p-2 rounded-lg font-bold text-[10px]"; hb.innerText="🔊 OUVIR"; 
                 hb.onclick=()=> { state.hintLocked=true; speak(cur.en, 'en-US', ()=> {state.hintLocked=false; render();}); };
-                
                 const sb = document.createElement('button'); 
                 sb.className=`flex-1 p-2 rounded-lg font-bold text-[10px] ${state.finished ? 'opacity-30 cursor-not-allowed bg-gray-200' : 'bg-blue-50'}`; 
                 sb.innerText="👁️ VER (2s)"; 
@@ -730,7 +793,6 @@
                     sb.onclick=()=> { state.hintLocked=true; state.showVisualHint=true; render(); setTimeout(()=>{state.showVisualHint=false; state.hintLocked=false; render();}, 2000); };
                 }
                 hRow.append(hb, sb); container.appendChild(hRow);
-                
             } else {
                 const os = getOptions(cur, PROVAS_DATA[state.prova].themes[state.theme]);
                 os.forEach((o, i) => {
