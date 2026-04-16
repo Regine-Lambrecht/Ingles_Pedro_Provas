@@ -126,9 +126,9 @@
             { id: "lv4a", label: "Gênio das Letras", icon: "🔡", challenge: "Resolva um nível 4 (Anagrama)" },
             { id: "lv4p", label: "Mestre dos Enigmas", icon: "🧩", challenge: "Resolva um nível 4 (Puzzle)" },
             { id: "lv5", label: "Craque da Escrita", icon: "✍️", challenge: "Resolva um nível 5 (Escrever)" },
-            { id: "pts50", label: "Aspirante a Mestre", icon: "🥉🎯", challenge: "Resolva 50 questões corretamente" },
-            { id: "pts120", label: "Veterano do Inglês", icon: "🥈🎯", challenge: "Resolva 120 questões corretamente" },
-            { id: "pts300", label: "Centurião da Língua", icon: "🥇🎯", challenge: "Resolva 300 questões corretamente" },
+            { id: "pts100", label: "Aspirante a Mestre", icon: "🥉🎯", challenge: "Resolva 100 questões corretamente" },
+            { id: "pts200", label: "Veterano do Inglês", icon: "🥈🎯", challenge: "Resolva 200 questões corretamente" },
+            { id: "pts400", label: "Centurião da Língua", icon: "🥇🎯", challenge: "Resolva 400 questões corretamente" },
             { id: "th2", label: "Duo Dinâmico", icon: "🌟", challenge: "Resolva todos os níveis em 2 temas" },
             { id: "th3", label: "Tripla Ameaça", icon: "🔥", challenge: "Resolva todos os níveis em 3 temas" },
             { id: "th4", label: "Busca de Diamante", icon: "💎", challenge: "Resolva todos os níveis em 4 temas" },
@@ -297,9 +297,9 @@
             if (lvSolved(5)) earned.add("lv5");
 
             // Point medals
-            if (pts >= 50) earned.add("pts50");
-            if (pts >= 120) earned.add("pts120");
-            if (pts >= 300) earned.add("pts300");
+            if (pts >= 100) earned.add("pts100");
+            if (pts >= 200) earned.add("pts200");
+            if (pts >= 400) earned.add("pts400");
 
             let completeThemesCount = 0;
             const checkThemeComplete = (prova, theme) => {
@@ -558,7 +558,7 @@
             const earned = getEarnedBadges();
             let topBadge = { id: "none", label: "Ganhe medalhas!", icon: ICONS.defaultMedal };
             
-            const ptMedals = ["pts300", "pts120", "pts50"];
+            const ptMedals = ["pts400", "pts200", "pts100"];
             let foundTop = false;
             for (const mId of ptMedals) {
                 if (earned.has(mId)) {
